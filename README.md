@@ -7,3 +7,16 @@ Interactive Maps &amp; Graphs of Realtime COVID Data
 ## Data
 Data is sourced from [COVID ActNow](https://covidactnow.org/) which aggregates data from a variety of sources.
 
+## Made With
+[d3](https://d3js.org)
+[Framer Motion](https://www.framer.com/motion/)
+[React](https://reactjs.org)
+[Preact](https://preactjs.com)
+[visx](https://airbnb.io/visx/)
+[COVID ActNow](https://covidactnow.org/)
+[React Icons](https://react-icons.github.io/react-icons/)
+[Turf](https://turfjs.org)
+[Oboe](http://oboejs.com)
+[Luxon](https://moment.github.io/luxon/#/)
+
+

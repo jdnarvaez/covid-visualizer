@@ -1,0 +1,96 @@
+.location-information {
+  display: flex;
+  flex-direction: row;
+  padding: 15px;
+  align-items: center;
+  align-content: center;
+  pointer-events: all;
+}
+
+.location-information > div {
+  margin-right: 15px;
+}
+
+.location-information > .risk-scale {
+  width: 15px;
+  margin-left: 15px;
+}
+
+.location-information > .risk-scale > .risk-level {
+  height: 15px;
+  width: 100%;
+  transition: all 250ms linear;
+}
+
+.location-information > .risk-scale > .risk-level.active {
+  transform: scale(2, 1.5);
+}
+
+.location-information > .risk-scale > .risk-level:first-child {
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
+}
+
+.location-information > .risk-scale > .risk-level:last-child {
+  border-bottom-left-radius: 15px;
+  border-bottom-right-radius: 15px;
+}
+
+.location-information > .risk-scale > .risk-level.severe {
+  background: var(--severe);
+}
+
+.location-information > .risk-scale > .risk-level.very-high {
+  background: var(--very-high);
+}
+
+.location-information > .risk-scale > .risk-level.high {
+  background: var(--high);
+}
+
+.location-information > .risk-scale > .risk-level.medium {
+  background: var(--medium);
+}
+
+.location-information > .risk-scale > .risk-level.low {
+  background: var(--low);
+}
+
+.location-information .state {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+  line-height: .75;
+  padding-top: 5px;
+}
+
+.location-information .state > .abbreviation {
+  letter-spacing: -5.5px;
+  font-size: 75px;
+  text-transform: uppercase;
+  padding-left: 10px;
+  padding-right: 15px;
+}
+
+.location-information .state > .full-name {
+  letter-spacing: -1.25px;
+  font-size: 20px;
+  text-transform: uppercase;
+}
+
+.location-information > .region {
+  line-height: .75;
+}
+
+.location-information .cbsa {
+  letter-spacing: -2px;
+  font-size: 40px;
+}
+
+.location-information .county {
+  letter-spacing: -2px;
+  font-size: 35px;
+  padding-left: 1.5px;
+}

@@ -1,0 +1,120 @@
+.summary {
+  display: flex;
+  flex-direction: column;
+  font-size: 25px;
+  position: absolute;
+  right: 15px;
+  top: 15px;
+  z-index: 1;
+  padding: 15px;
+  min-height: 45px;
+  transition: all 500ms ease;
+  transform: scale(0);
+}
+
+.summary.show {
+  transform: scale(1);
+}
+
+.last-updated {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+  text-transform: uppercase;
+  font-size: 12px;
+  margin-bottom: 10px;
+}
+
+.last-updated > .last-updated-caption {
+  margin-right: 5px;
+}
+
+.metric-level {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  font-size: 13px;
+  letter-spacing: -.5px;
+  padding-bottom: 10px;
+  padding-top: 10px;
+  border-bottom: 1px solid rgba(0, 0, 0, .1);
+  margin-bottom: 10px;
+}
+
+.metric-level-selector {
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+}
+
+.metric-level-selector > .country-level, .metric-level-selector > .state-level, .metric-level-selector > .county-level {
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-bottom: 5px;
+}
+
+.metric-level-selector > .active-indicator {
+  transform: scaleX(0);
+  width: 100%;
+  transition: all 500ms ease;
+  height: 3px;
+  background: var(--teal);
+  border-radius: 3px;
+}
+
+.metric-level-selector.active > .active-indicator {
+  transform: scaleX(1);
+}
+
+.metrics {
+  display: flex;
+  flex-wrap: wrap;
+  border-bottom: 1px solid rgba(0, 0, 0, .1);
+  margin-bottom: 15px;
+}
+
+.graphs {
+  margin-top: -25px;
+}
+
+.graphs > div > svg {
+  height: 375px;
+}
+
+.resize-handle {
+  width: 50px;
+  top: 0;
+  left: 0;
+  position: absolute;
+  height: 100%;
+  cursor: col-resize;
+}
+
+.min-max {
+  position: absolute;
+  top: 7.5px;
+  right: 7.5px;
+  z-index: 100;
+  cursor: pointer;
+}
+
+.stats-content {
+  display: flex;
+  flex-direction: column;
+  overflow-y: scroll;
+}
+
+.graph-tooltip {
+  z-index: 999;
+  background: var(--light);
+  display: flex;
+  flex-direction: column;
+  padding: 5px;
+  color: black;
+}
+
+.graph-tooltip > .tooltip-date {
+  padding-bottom: 5px;
+}

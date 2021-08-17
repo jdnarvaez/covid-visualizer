@@ -1,0 +1,41 @@
+.map {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+}
+
+.map > svg > g > rect {
+  fill: none !important;
+}
+
+.map.hide-counties .county-shape {
+  visibility: hidden !important;
+}
+
+.county-shape {
+  stroke: var(--light);
+  fill: rgb(240, 240, 240);
+}
+
+.county-shape:hover {
+  stroke: var(--dark);
+}
+
+.selected-county {
+  stroke: var(--dark);
+  fill: var(--light) !important;
+  transform: scale(1.2);
+}
+
+.hithere {
+  animation: hithere 400ms ease 1;
+}
+
+@keyframes hithere {
+  0% { transform: scale(0) }
+  30% { transform: scale(1.2); }
+  40%, 60% { transform: scale(1.6); }
+  50% { transform: scale(1.8); }
+  70% { transform: scale(1.4); }
+  100% { transform: scale(1.2); }
+}

@@ -1,0 +1,32 @@
+.map-controls {
+  display: flex;
+  flex-direction: row;
+  font-size: 25px;
+  padding: 15px;
+}
+
+.map-controls > .map-control-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+  margin-right: 10px;
+  cursor: pointer;
+  pointer-events: all;
+}
+
+.spin {
+  animation-name: spin;
+  animation-duration: 1000ms;
+  animation-iteration-count: infinite;
+  animation-timing-function: ease;
+}
+
+@keyframes spin {
+  from {
+    transform:rotate(0deg);
+  }
+  to {
+    transform:rotate(360deg);
+  }
+}

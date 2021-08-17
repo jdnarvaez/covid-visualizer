@@ -1,0 +1,45 @@
+.risk-scale {
+  width: 15px;
+  margin-left: 15px;
+}
+
+.risk-scale > .risk-level {
+  height: 15px;
+  width: 100%;
+  transition: all 250ms linear;
+}
+
+.risk-scale > .risk-level:first-child {
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
+}
+
+.risk-scale > .risk-level:nth-last-child(2) {
+  border-bottom-left-radius: 15px;
+  border-bottom-right-radius: 15px;
+}
+
+.risk-scale > .risk-level.active {
+  transform: scale(2, 1.5);
+  border-radius: 0px !important;
+}
+
+.risk-scale > .risk-level.severe {
+  background: var(--severe);
+}
+
+.risk-scale > .risk-level.very-high {
+  background: var(--very-high);
+}
+
+.risk-scale > .risk-level.high {
+  background: var(--high);
+}
+
+.risk-scale > .risk-level.medium {
+  background: var(--medium);
+}
+
+.risk-scale > .risk-level.low {
+  background: var(--low);
+}

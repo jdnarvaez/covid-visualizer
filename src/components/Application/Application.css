@@ -1,0 +1,85 @@
+:root{
+  --blue:#007bff;
+  --indigo:#6610f2;
+  --purple:#6f42c1;
+  --pink:#e83e8c;
+  --red:#dc3545;
+  --orange:#fd7e14;
+  --yellow:#ffc107;
+  --green:#28a745;
+  --teal:#20c997;
+  --cyan:#17a2b8;
+  --white:#fff;
+  --gray:#6c757d;
+  --gray-dark:#343a40;
+  --primary:(--blue);
+  --secondary:#6c757d;
+  --success:var(--teal);
+  --info:#17a2b8;
+  --warning:var(--orange);
+  --danger:var(--pink);
+  --light:#f8f9fa;
+  --dark:#343a40;
+  --primary-text:#9b9eb0;
+  --low: #32CCBC;
+  --medium: #F8D800;
+  --high: #F6416C;
+  --very-high: #8C1BAB;
+  --severe: #513162;
+}
+
+body, html {
+  /* background: linear-gradient(90deg, rgba(56, 189, 248.25), rgba(251, 113, 133, .25), rgba(163, 230, 53, .25)); */
+background-image: linear-gradient(to top, #f3e7e9 0%, #e3eeff 99%, #e3eeff 100%);
+  background-size: cover;
+/* background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAAADCAYAAABfwxXFAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAB6ADAAQAAAABAAAAAwAAAAAk1nmWAAAAYklEQVQIHQFXAKj/AfLr5/8NDBUAsoOnAKLnxwAbWS4A/cDpACz3GAAE8MbnAMW6wACuurYAKJRCAOzr6wAf9Q8AP049AAQBBgAA0erjAPtPIQACAwUACbz5AB/oDQAbFQ0AZkwgepc4fxEAAAAASUVORK5CYII="); */
+  /* background: var(--light); */
+  /* background: linear-gradient(90deg, rgb(56, 189, 248), rgb(251, 113, 133), rgb(163, 230, 53)); */
+  /* linear-gradient(90deg, rgb(56, 189, 248), rgb(251, 113, 133), rgb(163, 230, 53)) */
+  /* background: linear-gradient(to left top, rgba(167, 243, 208, .25), rgba(110, 231, 183, .25), rgba(59, 130, 246, .25)); */
+  /* background: conic-gradient(at left top, rgb(14, 165, 233), rgb(254, 215, 170), rgb(217, 119, 6)); */
+  /* background: linear-gradient(-125deg, #ECFCFF 0%, #ECFCFF 40%, #B2FCFF calc(40% + 1px), #B2FCFF 60%, #5EDFFF calc(60% + 1px), #5EDFFF 72%, #3E64FF calc(72% + 1px), #3E64FF 100%); */
+  /* background: linear-gradient(45deg, #C7F5FE 10%, #C7F5FE 40%, #FCC8F8 40%, #FCC8F8 60%, #EAB4F8 60%, #EAB4F8 65%, #F3F798 65%, #F3F798 90%); */
+  /* background: linear-gradient(235deg, #FFFFFF 0%, #000F25 100%), linear-gradient(180deg, #6100FF 0%, #000000 100%), linear-gradient(235deg, #FFA3AC 0%, #FFA3AC 40%, #00043C calc(40% + 1px), #00043C 60%, #005D6C calc(60% + 1px), #005D6C 70%, #00C9B1 calc(70% + 1px), #00C9B1 100%), linear-gradient(125deg, #FFA3AC 0%, #FFA3AC 40%, #00043C calc(40% + 1px), #00043C 60%, #005D6C calc(60% + 1px), #005D6C 70%, #00C9B1 calc(70% + 1px), #00C9B1 100%); */
+/* background-blend-mode: soft-light, screen, darken, normal; */
+  /* background: linear-gradient(125deg, #ECFCFF 0%, #ECFCFF 40%, #B2FCFF calc(40% + 1px), #B2FCFF 60%, #5EDFFF calc(60% + 1px), #5EDFFF 72%, #3E64FF calc(72% + 1px), #3E64FF 100%); */
+}
+
+path.low {
+  fill: var(--low);
+}
+
+path.medium {
+  fill: var(--medium);
+}
+
+path.high {
+  fill: var(--high);
+}
+
+path.very-high {
+  fill: var(--very-high);
+}
+
+path.severe {
+  fill: var(--severe);
+}
+
+div[role="navigation"] {
+  border-radius: 15px;
+  outline: none !important;
+}
+
+.__react_component_tooltip {
+  border-radius: 15px !important;
+  z-index: 100;
+}
+
+.overlay {
+  background-image: linear-gradient(90deg, rgba(243, 244, 246, .75), rgba(209, 213, 219, .75));
+  border-radius: 15px;
+  border: 1px solid rgba(0, 0, 0, .1);
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, .5);
+}
+
+/* 4FC1E9, 5D9CEC, AC92EC, EC87C0, CCD1D9, 656D78 */

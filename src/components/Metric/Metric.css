@@ -1,0 +1,108 @@
+.metric {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding-bottom: 10px;
+  min-width: 225px;
+}
+
+.metric > .label-container {
+  display: flex;
+  flex-direction: column;
+  padding-left: 10px;
+  padding-right: 15px;
+  font-size: 20px;
+  letter-spacing: -.75px;
+}
+
+.metric > .label-container > .label {
+  font-weight: 700;
+}
+
+.metric > .icon-container {
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  align-items: center;
+  position: relative;
+  width: 60px;
+  height: 60px;
+  min-width: 60px;
+  min-height: 60px;
+  border-radius: 60px;
+}
+
+.metric > .icon-container > .icon-outline {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  min-width: 60px;
+  min-height: 60px;
+}
+
+.metric > .icon-container > .icon {
+  stroke: white;
+  font-size: 30px;
+  width: 50px;
+  height: 50px;
+  min-width: 50px;
+  min-height: 50px;
+  max-width: 50px;
+  max-height: 50px;
+  border-radius: 50px;
+  background: var(--gray);
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  align-items: center;
+}
+
+.metric svg > circle {
+  stroke: var(--gray);
+}
+
+.metric > .icon-container > .icon.risk-level-1 {
+  background: var(--low);
+
+}
+
+.risk-level-1 svg > circle {
+  stroke: var(--low);
+}
+
+.metric > .icon-container > .icon.risk-level-2 {
+  background: var(--medium);
+}
+
+.risk-level-2 svg > circle {
+  stroke: var(--medium);
+}
+
+.metric > .icon-container > .icon.risk-level-3 {
+  background: var(--high);
+}
+
+.risk-level-3 svg > circle {
+  stroke: var(--high);
+}
+
+.metric > .icon-container > .icon.risk-level-4 {
+  background: var(--very-high);
+}
+
+.risk-level-4 svg > circle {
+  stroke: var(--very-high);
+}
+
+.metric > .icon-container > .icon.risk-level-5 {
+  background: var(--severe);
+}
+
+.risk-level-5 svg > circle {
+  stroke: var(--severe);
+}
+
+.metric > .icon-container  > .icon path {
+  stroke: white;
+}

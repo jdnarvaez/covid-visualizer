@@ -1,0 +1,46 @@
+.app-header {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  font-size: 25px;
+  position: absolute;
+  left: 15px;
+  top: 15px;
+  z-index: 10;
+  justify-content: space-between;
+  align-items: flex-start;
+  pointer-events: none;
+}
+
+.left-app-header, .left-app-header > .powered-by {
+  display: flex;
+  flex-direction: column;
+}
+
+.left-app-header > .powered-by {
+  cursor: pointer;
+  text-transform: uppercase;
+  margin: 15px;
+  letter-spacing: -.25px;
+  font-size: 10px;
+  text-shadow:
+    1px 1px #ffffff,
+    -1px -1px #ffffff,
+    -1px 1px #ffffff,
+    1px -1px #ffffff;
+  user-select: none;
+}
+
+.left-app-header > .powered-by > .logo-container {
+  position: relative;
+}
+
+.left-app-header > .powered-by > > .logo-container > .logo {
+  width: 60px;
+  pointer-events: all;
+  filter:
+    drop-shadow(1px 1px 0px #fff)
+    drop-shadow(-1px -1px 0px #fff)
+    drop-shadow(1px -1px 0px #fff)
+    drop-shadow(-1px 1px 0px #fff);
+}

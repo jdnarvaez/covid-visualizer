@@ -71,7 +71,7 @@ const config = {
   entry : entry,
   mode : isDevServer ? 'development' : 'production',
   output: {
-    publicPath: isDevServer ? '/' : '/covid-visualizer',
+    publicPath: isDevServer ? '/' : '/covid-visualizer/',
 		path: path.join(__dirname, 'docs'),
 		filename: '[name].js'
 	},

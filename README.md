@@ -7,6 +7,8 @@ Interactive Maps &amp; Graphs of Realtime COVID Data
 ## Data
 Data is sourced from [COVID ActNow](https://covidactnow.org/) which aggregates data from a variety of sources.
 
+[Service Workers](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API) are used to cache data from different APIs and are considered valid for up to 24 hours. By caching the data, we eliminate the need to continually hit the API servers and eliminate the need to keep large responses in memory. 
+
 ## Releases
 Vist the [Releases](https://github.com/jdnarvaez/covid-visualizer/releases) page to see what functionality has been added in each version.
 

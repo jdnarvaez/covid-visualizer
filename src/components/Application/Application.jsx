@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { DateTime } from 'luxon';
-import useResizeObserver from 'use-resize-observer';
 import { INITIAL_VALUE, TOOL_NONE } from 'react-svg-pan-zoom';
 import Tour from 'reactour'
 import { geoPath, geoBounds, geoAlbersUsa, geoCentroid } from 'd3-geo';
@@ -13,8 +12,6 @@ import Favicon from 'react-favicon';
 import { useToggle, useWindowSize } from '../../hooks';
 
 import Fonts from '../Fonts';
-import favicon from '../../site/favicon/favicon.ico';
-
 
 import LoadingAnimation from '../LoadingAnimation';
 import Map from '../Map';
@@ -22,7 +19,9 @@ import AppHeader from '../AppHeader';
 import Metric from '../Metric';
 import Stats from '../Stats';
 import { TourSteps } from '../InteractiveHelp';
+import PoweredBy from '../PoweredBy';
 
+import favicon from '../../site/favicon/favicon.ico';
 import serviceworker from './service-worker.js';
 
 if ('serviceWorker' in navigator) {
@@ -46,10 +45,14 @@ export default function Application({ apiKey }) {
   const [isTourOpen, setIsTourOpen] = useState(false);
   const [locating, setLocating] = useState(false);
   const [showIntro, setShowIntro] = useState(false);
+  const [showTooltips, toggleTooltips] = useToggle(new URL(window.location).searchParams.get('tips') === 'true' || !new URL(window.location).searchParams.has('tips')  ? true : false);
+  const [stateSummaries, setStateSummaries] = useState([]);
+  const [highlightedState, setHighlightedState] = useState(null);
   const didMountRef = useRef(false);
   const viewer = useRef(null);
   const appHeader = useRef(null);
   const interactiveTour = useRef(null);
+  const isTouchDevice = window.matchMedia('(pointer: coarse)').matches;
 
   useHotkeys('1', setLocationLock);
   useHotkeys('2', () => activateTool('none'));
@@ -58,6 +61,7 @@ export default function Application({ apiKey }) {
   useHotkeys('5', () => activateTool('zoom-out'));
   useHotkeys('6', () => viewer.current.fitToViewer('center', 'center'));
   useHotkeys('7', toggleStats);
+  useHotkeys('8', toggleTooltips);
 
   const steps = TourSteps({
     viewer,
@@ -66,6 +70,8 @@ export default function Application({ apiKey }) {
     currentLocation,
     showStats,
     toggleStats,
+    showTooltips,
+    toggleTooltips,
     findLocation: (e) => {
       if (!locationLock) {
         setLocationLock();
@@ -78,6 +84,32 @@ export default function Application({ apiKey }) {
       }
     }
   })
+
+  useEffect(() => {
+    const controller = new AbortController();
+    const url = `https://api.covidactnow.org/v2/states.json?apiKey=${apiKey}`
+
+    fetch(
+      url,
+      { signal: controller.signal }
+    )
+    .then(response => response.json())
+    .then(response => {
+      response.forEach(r => r.lastUpdatedDate = DateTime.fromISO(r.lastUpdatedDate));
+      setStateSummaries(response);
+    })
+    .catch(error => {
+      console.error(error);
+    })
+
+    return (() => {
+      try {
+        controller.abort();
+      } catch (err) {
+        console.error(err);
+      }
+    })
+  }, [])
 
   useEffect(() => {
     const url = new URL(window.location);
@@ -96,6 +128,12 @@ export default function Application({ apiKey }) {
     url.searchParams.set('stats', showStats.toString())
     window.history.pushState({}, '', url);
   }, [showStats]);
+
+  useEffect(() => {
+    const url = new URL(window.location);
+    url.searchParams.set('tips', showTooltips.toString())
+    window.history.pushState({}, '', url);
+  }, [showTooltips]);
 
   useEffect(() => {
     const url = new URL(window.location);
@@ -152,6 +190,7 @@ export default function Application({ apiKey }) {
     <div key="application" style={{ height: `${size.height}px`, width: `${size.width}px`, overflowY: 'hidden' }}>
       <Fonts key="fonts" />
       <Favicon key="favicon" url={favicon} />
+      <PoweredBy style={{ position: 'absolute', bottom: '15px', left: '15px', zIndex: 1 }} />
       <AnimateSharedLayout key="animate-layout">
         <div className="app" key="app" style={{ height: `${size.height}px`, width: `${size.width}px`, overflowY: 'hidden' }}>
           <Map
@@ -170,6 +209,10 @@ export default function Application({ apiKey }) {
             locating={locating}
             setLocating={setLocating}
             isTourOpen={isTourOpen}
+            stateSummaries={stateSummaries}
+            showTooltips={showTooltips}
+            highlightedState={highlightedState}
+            setHighlightedState={setHighlightedState}
             ref={viewer}
             apiKey={apiKey}
           />
@@ -188,6 +231,9 @@ export default function Application({ apiKey }) {
             setIsTourOpen={setIsTourOpen}
             locating={locating}
             setLocating={setLocating}
+            isTouchDevice={isTouchDevice}
+            showTooltips={showTooltips}
+            toggleTooltips={toggleTooltips}
             ref={appHeader}
           />
           {activeCounty &&
@@ -208,6 +254,7 @@ export default function Application({ apiKey }) {
               setMetricLevel={setMetricLevel}
               showStats={showStats}
               isTourOpen={isTourOpen}
+              setHighlightedState={setHighlightedState}
           />}
         </div>
       </AnimateSharedLayout>

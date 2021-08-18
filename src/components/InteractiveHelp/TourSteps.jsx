@@ -14,7 +14,7 @@ function TourStep({ title, subtitle, content, shortcut, actionCaption, onAction 
   )
 }
 
-export const TourSteps = ({ viewer, showIntro, currentLocation, findLocation, activeCounty, showStats, toggleStats }) => {
+export const TourSteps = ({ viewer, showIntro, currentLocation, findLocation, activeCounty, showStats, toggleStats, showTooltips, toggleTooltips }) => {
   return [showIntro ? {
       content: ({ goTo, step }) =>
         <TourStep
@@ -128,6 +128,20 @@ export const TourSteps = ({ viewer, showIntro, currentLocation, findLocation, ac
         content="Hide or show the statistics overlay."
       />
     } : undefined,
+    {
+      selector: '[data-tour="toggle-tooltips"]',
+      action: () => {
+        if (!showTooltips) {
+          toggleTooltips();
+        }
+      },
+      content:
+      <TourStep
+        title="Toggle Tooltips"
+        shortcut={8}
+        content="Hide or show the dynamic tooltips for states when hovered over."
+      />
+    },
     activeCounty ? {
       selector: '[data-tour="location-information"]',
       content:

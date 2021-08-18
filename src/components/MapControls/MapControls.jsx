@@ -2,7 +2,7 @@ import React from 'react';
 import { ImSpinner10 } from 'react-icons/im';
 import { IoHandRight, IoHandRightOutline } from 'react-icons/io5';
 import { GiResize } from 'react-icons/gi';
-import { RiCursorLine, RiCursorFill, RiZoomInLine, RiZoomInFill, RiZoomOutLine, RiZoomOutFill } from 'react-icons/ri';
+import { RiCursorLine, RiCursorFill, RiZoomInLine, RiZoomInFill, RiZoomOutLine, RiZoomOutFill, RiMessage2Fill, RiMessage2Line } from 'react-icons/ri';
 import { BsCursor, BsCursorFill } from 'react-icons/bs';
 import { FiHelpCircle } from 'react-icons/fi';
 import { TiChartLineOutline, TiChartLine } from 'react-icons/ti';
@@ -10,13 +10,13 @@ import ReactTooltip from 'react-tooltip';
 
 import './MapControls.css';
 
-function MapControlToggleButton({ className, style, tool, activateTool, activeTool, activeIcon, inactiveIcon, tooltipId, tooltipContent }) {
+function MapControlToggleButton({ className, style, tool, activateTool, activeTool, activeIcon, inactiveIcon, tooltipId, tooltipContent, isTouchDevice }) {
   return (
     <React.Fragment>
       <div className={`map-control-btn ${className ? className : ''}`} style={style} onClick={(e) => activateTool(tool)} data-tip data-for={tooltipId} data-tour={tooltipId}>
         {activeTool === tool ? activeIcon : inactiveIcon}
       </div>
-      {tooltipId && tooltipContent && <ReactTooltip
+      {!isTouchDevice && tooltipId && tooltipContent && <ReactTooltip
         id={tooltipId}
         aria-haspopup='true'
         effect="solid"
@@ -32,11 +32,11 @@ function MapControlToggleButton({ className, style, tool, activateTool, activeTo
   )
 }
 
-function MapControlButton({ onClick, icon, tooltipId, tooltipContent }) {
+function MapControlButton({ onClick, icon, tooltipId, tooltipContent, isTouchDevice }) {
   return (
     <div className="map-control-btn" onClick={onClick} data-tip data-for={tooltipId} data-tour={tooltipId}>
       {icon}
-      {tooltipId && tooltipContent && <ReactTooltip
+      {!isTouchDevice && tooltipId && tooltipContent && <ReactTooltip
         id={tooltipId}
         aria-haspopup='true'
         effect="solid"
@@ -52,11 +52,12 @@ function MapControlButton({ onClick, icon, tooltipId, tooltipContent }) {
   )
 }
 
-export default function MapControls({ style, fitToViewer, locationLock, toggleLocationLock, activeTool, activateTool, showStats, toggleStats, setIsTourOpen, locating }) {
+export default function MapControls({ style, fitToViewer, locationLock, toggleLocationLock, activeTool, activateTool, showStats, toggleStats, setIsTourOpen, locating, isTouchDevice, toggleTooltips, showTooltips }) {
   return (
     <div className="map-controls overlay" data-tour="map-controls">
       <MapControlToggleButton
         tool="location-lock"
+        isTouchDevice={isTouchDevice}
         activateTool={toggleLocationLock}
         activeTool={locationLock ? 'location-lock' : 'none'}
         activeIcon={locating ? <ImSpinner10 /> : <BsCursorFill />}
@@ -68,6 +69,7 @@ export default function MapControls({ style, fitToViewer, locationLock, toggleLo
       />
       <MapControlToggleButton
         tool="none"
+        isTouchDevice={isTouchDevice}
         activateTool={activateTool}
         activeTool={activeTool}
         activeIcon={<RiCursorFill />}
@@ -77,6 +79,7 @@ export default function MapControls({ style, fitToViewer, locationLock, toggleLo
       />
       <MapControlToggleButton
         tool="pan"
+        isTouchDevice={isTouchDevice}
         activateTool={activateTool}
         activeTool={activeTool}
         activeIcon={<IoHandRight />}
@@ -86,6 +89,7 @@ export default function MapControls({ style, fitToViewer, locationLock, toggleLo
       />
       <MapControlToggleButton
         tool="zoom-in"
+        isTouchDevice={isTouchDevice}
         activateTool={activateTool}
         activeTool={activeTool}
         activeIcon={<RiZoomInFill />}
@@ -95,6 +99,7 @@ export default function MapControls({ style, fitToViewer, locationLock, toggleLo
       />
       <MapControlToggleButton
         tool="zoom-out"
+        isTouchDevice={isTouchDevice}
         activateTool={activateTool}
         activeTool={activeTool}
         activeIcon={<RiZoomOutFill />}
@@ -103,18 +108,28 @@ export default function MapControls({ style, fitToViewer, locationLock, toggleLo
         tooltipContent={<p>Tap here to activate the zoom out tool. When this tool is active, a single tap will zoom the map out from that position.</p>}
       />
       <MapControlButton
+        isTouchDevice={isTouchDevice}
         onClick={fitToViewer}
         icon={<GiResize />}
         tooltipId="fit-to-viewer"
         tooltipContent={<p>Tap here to fit the map to the window.</p>}
       />
       <MapControlButton
+        isTouchDevice={isTouchDevice}
         onClick={toggleStats}
         icon={showStats ? <TiChartLine /> : <TiChartLineOutline />}
         tooltipId="toggle-stats"
         tooltipContent={<p>{`Tap here to ${showStats ? 'hide' : 'show'} the stats overlay.`}</p>}
       />
       <MapControlButton
+        isTouchDevice={isTouchDevice}
+        onClick={toggleTooltips}
+        icon={showTooltips ? <RiMessage2Fill /> : <RiMessage2Line />}
+        tooltipId="toggle-tooltips"
+        tooltipContent={<p>{`Tap here to ${showTooltips ? 'hide' : 'show'} tooltips for each state.`}</p>}
+      />
+      <MapControlButton
+        isTouchDevice={isTouchDevice}
         onClick={() => setIsTourOpen(true)}
         icon={<FiHelpCircle />}
         tooltipId="interactive-help"

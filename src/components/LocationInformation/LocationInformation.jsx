@@ -5,7 +5,7 @@ import RiskLevel from '../RiskLevel';
 
 import './LocationInformation.css';
 
-export default React.forwardRef(({ summary, activeCounty, width }, ref) => {
+export default React.forwardRef(({ summary, activeCounty, width, isTouchDevice }, ref) => {
   const [stateCodes, setStateCodes] = useState([]);
 
   useEffect(() => {
@@ -18,7 +18,7 @@ export default React.forwardRef(({ summary, activeCounty, width }, ref) => {
 
   return activeCounty ? (
     <div key={`county-info-${activeCounty.id}`} className="location-information overlay" ref={ref} style={{ minWidth: `${.3 * width}px`}} data-tour="location-information">
-      <RiskScale summary={summary} />
+      <RiskScale summary={summary} isTouchDevice={isTouchDevice} />
       <div className="state">
         <div className="abbreviation extra-bold-text">{activeCounty.properties.state}</div>
         {stateCodes && <div className="full-name bold-text">{stateCodes[activeCounty.properties.state]}</div>}

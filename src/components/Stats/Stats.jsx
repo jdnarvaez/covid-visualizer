@@ -31,7 +31,7 @@ import LoadingAnimation from '../LoadingAnimation';
 
 import './Stats.css';
 
-export default function Stats({ apiKey, relativeTo, activeCounty, activeMetric, activateMetric, summary, activateSummary, timeseries, activateTimeseries, width, height, metricLevel, setMetricLevel, showStats, isShowTour }) {
+export default function Stats({ apiKey, relativeTo, activeCounty, activeMetric, activateMetric, summary, activateSummary, timeseries, activateTimeseries, width, height, metricLevel, setMetricLevel, showStats, isShowTour, setHighlightedState }) {
   const [summaryAbortController, setSummaryAbortController] = useState(undefined);
   const [timeseriesAbortController, setTimeseriesAbortController] = useState(undefined);
   const [annotations, setAnnotations] = useState({});
@@ -337,6 +337,7 @@ export default function Stats({ apiKey, relativeTo, activeCounty, activeMetric, 
       key={`summary-${activeCounty.id}`}
       style={style}
       className={`summary overlay ${showStats ? 'show' : 'hide' }`}
+      onMouseEnter={() => setHighlightedState(null)}
     >
       <div className="resize-handle" {...bind()} ref={resizeHandleRef} data-tour="resize-handle" />
       <div className="min-max" onClick={toggleMaximized} data-tour="toggle-maximise">{maximized ? <TiArrowMinimise /> : <TiArrowMaximise />}</div>

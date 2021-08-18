@@ -1,0 +1,60 @@
+.risk-level-metric {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.risk-level-metric > .risk-level-label {
+  margin-right: 10px;
+  letter-spacing: -.25px;
+  font-size: 12px;
+}
+
+.risk-level-metric > .risk-level-scale {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.risk-level-metric > .risk-level-scale > .risk-level {
+  width: 25px;
+  height: 5px;
+  transition: all 250ms linear;
+  opacity: .25;
+}
+
+.risk-level-metric > .risk-level-scale > .risk-level:first-child {
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+}
+
+.risk-level-metric > .risk-level-scale > .risk-level:nth-last-child(1) {
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+}
+
+.risk-level-metric > .risk-level-scale > .risk-level.active {
+  transform: scale(1, 1.75);
+  border-radius: 0px !important;
+  opacity: 1;
+}
+
+.risk-level-metric > .risk-level-scale > .risk-level.severe {
+  background: var(--severe);
+}
+
+.risk-level-metric > .risk-level-scale > .risk-level.very-high {
+  background: var(--very-high);
+}
+
+.risk-level-metric > .risk-level-scale > .risk-level.high {
+  background: var(--high);
+}
+
+.risk-level-metric > .risk-level-scale > .risk-level.medium {
+  background: var(--medium);
+}
+
+.risk-level-metric > .risk-level-scale > .risk-level.low {
+  background: var(--low);
+}

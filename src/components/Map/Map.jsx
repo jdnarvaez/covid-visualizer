@@ -3,27 +3,30 @@ import { INITIAL_VALUE, ReactSVGPanZoom } from 'react-svg-pan-zoom';
 import { geoPath, geoBounds, geoAlbersUsa, geoCentroid } from 'd3-geo';
 import { feature, mesh, bbox } from 'topojson-client';
 import oboe from 'oboe';
-import { Tooltip } from 'react-svg-tooltip';
-import { GrLocationPin } from 'react-icons/gr';
 import VisibilitySensor from 'react-visibility-sensor';
 
-import LocationPin from './LocationPin';
+import { TooltipWithBounds } from '@visx/tooltip';
+
 import RiskLevel from '../RiskLevel';
 import LoadingAnimation from '../LoadingAnimation';
 import ProgressLine from '../ProgressLine';
+import StateTooltip from '../StateTooltip';
 
 import './Map.css';
 
 const projection = geoAlbersUsa().scale(1300).translate([487.5, 305]);
 const path = geoPath(projection);
 
-export default React.forwardRef(({ apiKey, width, height, activeTool, activateTool, activeCounty, activateCounty, summary, activeMetric, locationLock, currentLocation, setCurrentLocation, setLocating, isTourOpen }, ref) => {
+export default React.forwardRef(({ apiKey, width, height, activeTool, activateTool, activeCounty, activateCounty, summary, activeMetric, locationLock, currentLocation, setCurrentLocation, setLocating, isTourOpen, stateSummaries, showTooltips, highlightedState, setHighlightedState }, ref) => {
   const [viewerState, setViewerState] = useState(INITIAL_VALUE);
   const [baseMap, setBaseMap] = useState(undefined);
+  const [states, setStates] = useState([]);
   const [counties, setCounties] = useState([]);
   const [countyHighlight, setCountyHighlight] = useState(null);
   const [countyShapes, setCountyShapes] = useState([]);
   const [parsing, setParsing] = useState(true);
+  const [stateHighlight, setStateHighlight] = useState(null);
+  const [tooltip, setTooltip] = useState(null);
   const didMountRef = useRef(false);
   const overlayRef = React.createRef();
   const valueUpdaterRef = React.createRef();
@@ -102,15 +105,18 @@ export default React.forwardRef(({ apiKey, width, height, activeTool, activateTo
         Object.assign(county, feature(UnitedStates, county))
       })
 
+      UnitedStates.objects.states.geometries.forEach(state => Object.assign(state, feature(UnitedStates, state)))
+
       const map = (
         <g key="base-map" strokeLinejoin="round" strokeLinecap="round" pointerEvents="none">
-          {UnitedStates.objects.states.geometries.map(state => <path key={state.id} stroke="var(--white)" d={`${path(feature(UnitedStates, state))}`} fill="none" strokeWidth="1.25" />)}
+          {UnitedStates.objects.states.geometries.map(state => <path key={state.id} stroke="var(--white)" d={`${path(state)}`} fill="none" strokeWidth="1.25" />)}
           <path key="nation" stroke="var(--white)" d={`${path(feature(UnitedStates, UnitedStates.objects.nation))}`} fill="none" strokeWidth="1.25" />
         </g>
       )
 
+      setStates(UnitedStates.objects.states.geometries);
       setCounties(UnitedStates.objects.counties.geometries);
-      setBaseMap(map)
+      setBaseMap(map);
     })
   }, []);
 
@@ -131,6 +137,7 @@ export default React.forwardRef(({ apiKey, width, height, activeTool, activateTo
                 style={{ visibility: isVisible ? 'visible' : 'hidden' }}
                 key={county.id}
                 id={county.id}
+                state-fips={county.properties.stateFips}
                 className={`county-shape ${RiskLevel.valueOf(node.riskLevels.overall)}`}
                 fillOpacity=".8"
                 strokeWidth=".25"
@@ -203,6 +210,67 @@ export default React.forwardRef(({ apiKey, width, height, activeTool, activateTo
     )
   }, [activeCounty, summary])
 
+  useEffect(() => {
+    if (!highlightedState) {
+      setStateHighlight(null);
+      setTooltip(null);
+      return;
+    }
+
+    const centroid = path.centroid(highlightedState);
+    const bounds = path.bounds(highlightedState);
+
+    setStateHighlight(
+      <path
+        data-tour="state-highlight"
+        key={`selected-state-${highlightedState.id}`}
+        style={{ transformOrigin: `${centroid[0]}px ${centroid[1]}px` }}
+        className={`selected-state`}
+        fillOpacity="0"
+        fill="none"
+        strokeWidth="3"
+        pointerEvents="none"
+        stroke="white"
+        d={`${path(highlightedState)}`}
+      />
+    )
+  }, [highlightedState])
+
+  useEffect(() => {
+    const node = document.querySelector('.selected-state');
+
+    if (!node || !highlightedState || stateSummaries.length === 0 || !showTooltips) {
+      setTooltip(null);
+      return;
+    }
+
+    const rect = document.querySelector('.selected-state').getBoundingClientRect();
+    var left = rect.left + rect.width;
+    var top = rect.top + rect.height;
+    const leftOverflow = window.innerWidth - (left);
+    const topOverflow = window.innerHeight - (top);
+
+    if (leftOverflow < 0) {
+      left += leftOverflow;
+    }
+
+    if (topOverflow < 0) {
+      top += topOverflow;
+    }
+
+    const stateSummary = stateSummaries.find(s => s.fips === highlightedState.id);
+
+    setTooltip(<TooltipWithBounds
+      key={Math.random()}
+      left={left}
+      top={top}
+      className="overlay map-tooltip"
+    >
+      <StateTooltip state={highlightedState} summary={stateSummary} />
+    </TooltipWithBounds>)
+
+  }, [stateHighlight, highlightedState, stateSummaries, showTooltips])
+
   const onChangeValue = (value) => {
     if (baseMap) {
       if (didMountRef.current) {
@@ -224,7 +292,13 @@ export default React.forwardRef(({ apiKey, width, height, activeTool, activateTo
   }
 
   const onMouseMove = (event) => {
-    // console.log(event);
+    const id = event.originalEvent.target.getAttribute('state-fips');
+
+    if (id) {
+      setHighlightedState(states.find(s => s.id === id));
+    } else {
+      setHighlightedState(null)
+    }
   }
 
   const onClick = (event) => {
@@ -238,8 +312,9 @@ export default React.forwardRef(({ apiKey, width, height, activeTool, activateTo
 
   return (
     baseMap ? (
-    <React.Fragment>
+    <>
       {parsing && <ProgressLine width={width} />}
+      {tooltip}
       <ReactSVGPanZoom
         key="viewer"
         className={`map ${isTourOpen ? 'hide-counties' : 'show-counties' }`}
@@ -272,6 +347,7 @@ export default React.forwardRef(({ apiKey, width, height, activeTool, activateTo
             {countyShapes}
           </g>
           {baseMap}
+          {stateHighlight}
           {countyHighlight}
           {currentLocation && <g>
             <circle data-tour="current-location" cx={currentLocation.x - .25} cy={currentLocation.y - .25} r="1.5" fill="none" stroke="none" />
@@ -292,9 +368,7 @@ export default React.forwardRef(({ apiKey, width, height, activeTool, activateTo
           </g>}
         </svg>
       </ReactSVGPanZoom>
-    </React.Fragment>
+    </>
     ) : <LoadingAnimation />
   )
 })
-
-// <g className="location-pin" transform={`translate(${currentLocation.x}, ${currentLocation.y})`}><LocationPin /></g>

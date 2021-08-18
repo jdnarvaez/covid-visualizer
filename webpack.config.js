@@ -1,4 +1,3 @@
-const Autoprefixer = require('autoprefixer');
 const PostCSSAssetsPlugin = require('postcss-assets-webpack-plugin');
 const PostCSSCustomProperties = require('postcss-custom-properties');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
@@ -82,8 +81,6 @@ const config = {
   resolve: {
     extensions: ['.js', '.jsx'],
     alias: {
-      // 'react' : path.resolve(__dirname, 'node_modules', 'react'),
-      // 'react-dom' : path.resolve(__dirname, 'node_modules', 'react-dom')
       'react': 'preact/compat',
       'react-dom/test-utils': 'preact/test-utils',
       'react-dom': 'preact/compat',

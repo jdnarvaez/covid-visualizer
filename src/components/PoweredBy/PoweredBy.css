@@ -1,0 +1,32 @@
+.powered-by {
+  display: flex;
+  flex-direction: column;
+}
+
+.powered-by {
+  cursor: pointer;
+  text-transform: uppercase;
+  margin: 15px;
+  letter-spacing: -.25px;
+  font-size: 10px;
+  text-shadow:
+    1px 1px #ffffff,
+    -1px -1px #ffffff,
+    -1px 1px #ffffff,
+    1px -1px #ffffff;
+  user-select: none;
+}
+
+.powered-by > .logo-container {
+  position: relative;
+}
+
+.powered-by > .logo-container > .logo {
+  width: 60px;
+  pointer-events: all;
+  filter:
+    drop-shadow(1px 1px 0px #fff)
+    drop-shadow(-1px -1px 0px #fff)
+    drop-shadow(1px -1px 0px #fff)
+    drop-shadow(-1px 1px 0px #fff);
+}

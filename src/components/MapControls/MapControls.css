@@ -3,6 +3,7 @@
   flex-direction: row;
   font-size: 25px;
   padding: 15px;
+  margin-bottom: 15px;
 }
 
 .map-controls > .map-control-btn {

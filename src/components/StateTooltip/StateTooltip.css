@@ -1,0 +1,60 @@
+.state-tooltip {
+  display: flex;
+  flex-direction: column;
+  width: 300px;
+}
+
+.state-tooltip > .state-name {
+  letter-spacing: -.125px;
+  font-size: 15px;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid rgba(0, 0, 0, .1);
+}
+
+.state-tooltip > .tooltip-content {
+  display: flex;
+  flex-direction: column;
+  letter-spacing: -.25px;
+  font-size: 12px;
+  font-weight: light;
+  padding-bottom: 5px;
+}
+
+.state-tooltip > .tooltip-content > div {
+  margin-bottom: 5px;
+}
+
+.state-tooltip > .tooltip-content .tooltip-metric-horizontal {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.state-tooltip > .tooltip-content > .tooltip-metric-group {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin-bottom: 0px;
+}
+
+.state-tooltip > .tooltip-content > .tooltip-metric-group > div {
+  flex: 1 1 100px;
+  margin-bottom: 5px;
+}
+
+.state-tooltip > .tooltip-content .tooltip-metric-vertical {
+  display: flex;
+  flex-direction: column;
+}
+
+.state-tooltip > .tooltip-content .tooltip-metric-horizontal > .label, .state-tooltip > .tooltip-content .tooltip-metric-vertical > .label {
+  font-weight: bold;
+  font-size: 12px;
+  margin-right: 10px;
+}
+
+.state-tooltip > .tooltip-content .tooltip-metric-horizontal > .value, .state-tooltip > .tooltip-content .tooltip-metric-vertical > .value {
+  font-weight: light;
+  font-size: 12px;
+}

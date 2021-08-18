@@ -7,6 +7,9 @@ Interactive Maps &amp; Graphs of Realtime COVID Data
 ## Data
 Data is sourced from [COVID ActNow](https://covidactnow.org/) which aggregates data from a variety of sources.
 
+## Releases
+Vist the [Releases](https://github.com/jdnarvaez/covid-visualizer/releases) page to see what functionality has been added in each version.
+
 ## Made With
 * [d3](https://d3js.org)
 * [Framer Motion](https://www.framer.com/motion/)

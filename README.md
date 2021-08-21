@@ -13,13 +13,14 @@ Data is sourced from [COVID ActNow](https://covidactnow.org/) which aggregates d
 
 # Releases
 ## 0.0.3
-Use web workers to load topography
+* Use web workers to load topography
+* Include data for Lousiana, Alaska, and Puerto Rico
 
 ## 0.0.2
-State summaries on mouse over
+* State summaries on mouse over
 
 ## 0.0.1
-Initial release
+* Initial release
 
 # Made With
 * [d3](https://d3js.org)

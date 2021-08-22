@@ -14,6 +14,13 @@ Data is sourced from [COVID ActNow](https://covidactnow.org/) which aggregates d
 The topography is preprocessed so that minimal dependencies and processing is required at runtime in an effort to lower resource utilization. County shapes, county summaries and timeseries data are streamed in JSON format and processed on demand while streaming.
 
 # Releases
+## 0.0.5
+* Include ICU Capacity Map Layer
+* Include Hospital Capacity Map Layer
+
+## 0.0.4
+* Use visibility sensor for counties
+
 ## 0.0.3
 * Use web workers to load topography
 * Include data for Lousiana, Alaska, and Puerto Rico

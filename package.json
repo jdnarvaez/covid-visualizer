@@ -1,6 +1,6 @@
 {
   "name": "covid-visualizer",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "dependencies": {
     "@types/react": "16.4.16",
     "@visx/xychart": "v2.0.0-alpha.0",

@@ -32,6 +32,12 @@ const fillColor = (county, mapLayer) => {
     case 'testPositivityRatio':
       fill = county.fill && county.fill.testPositivityRatio;
       break;
+    case 'icuCap':
+      fill = county.fill && county.fill.icuCap;
+      break;
+    case 'hospitalCap':
+      fill = county.fill && county.fill.hospitalCap;
+      break;
   }
 
   return fill ? fill : 'rgba(255, 255, 255, 0)';

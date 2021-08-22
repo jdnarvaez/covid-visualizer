@@ -13,9 +13,9 @@ import {
   RiExchangeLine, RiExchangeFill
 } from 'react-icons/ri';
 
-import { BsCursor, BsCursorFill } from 'react-icons/bs';
+import { BsCursor, BsCursorFill, BsBarChart, BsBarChartFill } from 'react-icons/bs';
 import { FiHelpCircle } from 'react-icons/fi';
-import { TiChartLineOutline, TiChartLine } from 'react-icons/ti';
+import { TiChartLineOutline, TiChartLine, TiChartBar, TiChartBarOutline } from 'react-icons/ti';
 import ReactTooltip from 'react-tooltip';
 
 import './MapControls.css';
@@ -227,10 +227,19 @@ export default function MapControls({ style, fitToViewer, locationLock, toggleLo
           isTouchDevice={isTouchDevice}
           activateTool={setMapLayer}
           activeTool={mapLayer}
-          activeIcon={<RiExchangeFill />}
-          inactiveIcon={<RiExchangeLine />}
-          layerName={`CDC Transmission Level`}
-          tooltipId="cdc"
+          activeIcon={<BsBarChartFill />}
+          inactiveIcon={<BsBarChart />}
+          layerName={`ICU Capacity`}
+          tooltipId="icuCap"
+        />
+        <MapControlLayerButton
+          isTouchDevice={isTouchDevice}
+          activateTool={setMapLayer}
+          activeTool={mapLayer}
+          activeIcon={<TiChartBar />}
+          inactiveIcon={<TiChartBarOutline />}
+          layerName={`Hospital Capacity`}
+          tooltipId="hospitalCap"
         />
         <MapControlLayerButton
           isTouchDevice={isTouchDevice}
@@ -294,6 +303,15 @@ export default function MapControls({ style, fitToViewer, locationLock, toggleLo
           inactiveIcon={<RiPercentLine />}
           layerName={`Test Positivity`}
           tooltipId="testPositivityRatio"
+        />
+        <MapControlLayerButton
+          isTouchDevice={isTouchDevice}
+          activateTool={setMapLayer}
+          activeTool={mapLayer}
+          activeIcon={<RiExchangeFill />}
+          inactiveIcon={<RiExchangeLine />}
+          layerName={`CDC Transmission Level`}
+          tooltipId="cdc"
         />
       </MapControlDropdownButton>
       <MapControlButton

@@ -1,5 +1,18 @@
 import React, { memo } from 'react';
-import { interpolateInferno, interpolateMagma, interpolateWarm, interpolateOrRd, interpolateGreens, interpolatePuRd, interpolateYlOrRd, interpolateRdYlGn } from 'd3-scale-chromatic';
+
+import {
+  interpolateInferno,
+  interpolateMagma,
+  interpolateWarm,
+  interpolateOrRd,
+  interpolateGreens,
+  interpolateYlOrRd,
+  interpolateRdYlGn,
+  interpolatePuRd,
+  interpolateRdPu,
+  interpolateYlOrBr,
+  interpolateOranges
+} from 'd3-scale-chromatic';
 
 import './Legend.css';
 
@@ -8,6 +21,8 @@ const stops = [0, .05, .1, .15, .2, .25, .3, .35, .4, .45, .5, .55, .6, .65, .7,
 const gradients = {
   risk: 'risk',
   cdc: 'cdc',
+  icuCap: 'interpolateOranges',
+  hospitalCap: 'interpolateRdPu',
   cfr: 'interpolateWarm',
   deaths: 'interpolateOrRd',
   vaccinated: 'interpolateGreens',
@@ -18,6 +33,8 @@ const gradients = {
 };
 
 const interpolators = {
+  icuCap: interpolateOranges,
+  hospitalCap: interpolateRdPu,
   cfr: interpolateWarm,
   deaths: interpolateOrRd,
   vaccinated: interpolateGreens,

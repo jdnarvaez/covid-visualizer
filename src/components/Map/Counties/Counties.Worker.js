@@ -1,5 +1,18 @@
 import { scaleQuantize, scaleLinear, scaleQuantile, scaleSequential } from 'd3-scale';
-import { interpolateInferno, interpolateMagma, interpolateWarm, interpolateOrRd, interpolateGreens, interpolatePuRd, interpolateYlOrRd, interpolateRdYlGn } from 'd3-scale-chromatic';
+
+import {
+  interpolateInferno,
+  interpolateMagma,
+  interpolateWarm,
+  interpolateOrRd,
+  interpolateGreens,
+  interpolateYlOrRd,
+  interpolateRdYlGn,
+  interpolatePuRd,
+  interpolateRdPu,
+  interpolateYlOrBr,
+  interpolateOranges
+} from 'd3-scale-chromatic';
 
 import shapes from '../../../geometry/counties.json';
 import oboe from '../../../oboe';
@@ -69,8 +82,10 @@ const sendMessage = throttle(() => {
 
 const overallRiskColorScale = scaleQuantile().domain([1, 2, 3, 4, 5]).range(['var(--low)', 'var(--medium)', 'var(--high)', 'var(--very-high)', 'var(--severe)']);
 const cdcRiskColorScale = scaleQuantile().domain([0, 1, 2, 3, 4]).range(['var(--low)', 'var(--medium)', 'var(--high)', 'var(--very-high)', 'transparent']);
+const hospitalCapScale = scaleSequential(interpolateRdPu);
+const icuCapScale = scaleSequential(interpolateOranges);
 
-const addCounty = (county, summary) => {
+const setFillColors = (county, summary) => {
   county.fill = {
     riskLevels: {
       overall: overallRiskColorScale(summary.riskLevels.overall),
@@ -78,6 +93,17 @@ const addCounty = (county, summary) => {
     cdc: cdcRiskColorScale(summary.cdcTransmissionLevel)
   }
 
+  if (summary.actuals.hospitalBeds && summary.actuals.hospitalBeds.capacity !== null && summary.actuals.hospitalBeds.currentUsageTotal !== null) {
+    county.fill.hospitalCap = hospitalCapScale(summary.actuals.hospitalBeds.currentUsageTotal / summary.actuals.hospitalBeds.capacity);
+  }
+
+  if (summary.actuals.icuBeds && summary.actuals.icuBeds.capacity !== null && summary.actuals.icuBeds.currentUsageTotal !== null) {
+    county.fill.icuCap = icuCapScale(summary.actuals.icuBeds.currentUsageTotal / summary.actuals.icuBeds.capacity);
+  }
+}
+
+const addCounty = (county, summary) => {
+  setFillColors(county, summary);
   counties.push(county);
   sendMessage();
 }
@@ -140,12 +166,7 @@ const fetchData = (apiKey) => {
       const vaxPct = !!stats.actuals.vaccinationsCompleted ? stats.actuals.vaccinationsCompleted / stats.population : undefined;
 
       if (!county.fill) {
-        county.fill = {
-          riskLevels: {
-            overall: overallRiskColorScale(stats.riskLevels.overall),
-          },
-          cdc: cdcRiskColorScale(stats.cdcTransmissionLevel)
-        }
+        setFillColors(county, stats);
       }
 
       county.fill.cfr = !!stats.actuals.deaths ? cfrScale(1 - (cfr / maxCFR)) : 'transparent';

@@ -139,6 +139,15 @@ const fetchData = (apiKey) => {
       const cfr = !!stats.actuals.deaths && !!stats.actuals.cases ? stats.actuals.deaths / stats.actuals.cases : undefined;
       const vaxPct = !!stats.actuals.vaccinationsCompleted ? stats.actuals.vaccinationsCompleted / stats.population : undefined;
 
+      if (!county.fill) {
+        county.fill = {
+          riskLevels: {
+            overall: overallRiskColorScale(stats.riskLevels.overall),
+          },
+          cdc: cdcRiskColorScale(stats.cdcTransmissionLevel)
+        }
+      }
+
       county.fill.cfr = !!stats.actuals.deaths ? cfrScale(1 - (cfr / maxCFR)) : 'transparent';
       county.fill.deaths = !!stats.actuals.deaths ? deathScale(stats.actuals.deaths / maxDeaths) : 'transparent';
       county.fill.vaccinated = !!vaxPct ? vaccinatedScale(vaxPct / maxVaxPct) : 'transparent';

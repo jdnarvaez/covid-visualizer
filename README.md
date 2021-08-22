@@ -15,6 +15,7 @@ Data is sourced from [COVID ActNow](https://covidactnow.org/) which aggregates d
 ## 0.0.3
 * Use web workers to load topography
 * Include data for Lousiana, Alaska, and Puerto Rico
+* Heat map layers for relative and absolute statistics
 
 ## 0.0.2
 * State summaries on mouse over

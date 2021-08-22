@@ -11,6 +11,8 @@ Data is sourced from [COVID ActNow](https://covidactnow.org/) which aggregates d
 
 [Web Workers](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API) are used to load topography in the background and compute relative statistics for regions.
 
+The topography is preprocessed so that minimal dependencies and processing is required at runtime in an effort to lower resource utilization. County shapes, county summaries and timeseries data are streamed in JSON format and processed on demand while streaming.
+
 # Releases
 ## 0.0.3
 * Use web workers to load topography

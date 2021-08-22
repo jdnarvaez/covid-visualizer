@@ -195,8 +195,8 @@ export default function Application({ apiKey }) {
         return;
       }
 
-      // setShowIntro(true);
-      // setIsTourOpen(true);
+      setShowIntro(true);
+      setIsTourOpen(true);
     }, 10)
   }, [])
 

@@ -58,11 +58,11 @@
   flex-direction: column;
   padding: 15px;
   padding-bottom: 12.5px;
-  min-width: 150px;
+  min-width: 190px;
 }
 
 .map-control-drop-down-container > div {
-  margin-bottom: 5px;
+  margin-bottom: 10px;
 }
 
 .map-control-drop-down-container > div:last-child {

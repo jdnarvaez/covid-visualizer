@@ -53,20 +53,29 @@ const throttle = (fn, threshhold, scope) => {
 const counties = [];
 const toProcess = {};
 const summaries = {};
+let doneCount = 0;
 
 const sendMessage = throttle(() => {
   self.postMessage(counties);
+
+  if (counties.length === 3220 && Object.keys(summaries).length === 0) {
+    if (doneCount) {
+      counties.length = 0;
+    } else {
+      doneCount++;
+    }
+  }
 }, 60);
 
-// FIXME:
 const overallRiskColorScale = scaleQuantile().domain([1, 2, 3, 4, 5]).range(['var(--low)', 'var(--medium)', 'var(--high)', 'var(--very-high)', 'var(--severe)']);
-// fillColorScale = scaleSequential(interpolateMagma);
+const cdcRiskColorScale = scaleQuantile().domain([0, 1, 2, 3, 4]).range(['var(--low)', 'var(--medium)', 'var(--high)', 'var(--very-high)', 'transparent']);
 
 const addCounty = (county, summary) => {
   county.fill = {
     riskLevels: {
       overall: overallRiskColorScale(summary.riskLevels.overall),
-    }
+    },
+    cdc: cdcRiskColorScale(summary.cdcTransmissionLevel)
   }
 
   counties.push(county);
@@ -107,8 +116,8 @@ const fetchData = (apiKey) => {
     const cases = filterOutliers(json.map(s => s.actuals.cases / s.population).filter(s => !!s && !isNaN(s)));
     const maxCases = Math.max(...cases);
 
-    const cfr = filterOutliers(json.map(s => s.actuals.deaths / s.actuals.cases).filter(s => !!s && !isNaN(s)));
-    const maxCFR = Math.max(...cfr);
+    const cfrs = filterOutliers(json.map(s => s.actuals.deaths / s.actuals.cases).filter(s => !!s && !isNaN(s)));
+    const maxCFR = Math.max(...cfrs);
 
     const vaxPct = json.map(s => s.actuals.vaccinationsCompleted / s.population).filter(s => !!s && !isNaN(s));
     const maxVaxPct = Math.max(...vaxPct);
@@ -116,7 +125,7 @@ const fetchData = (apiKey) => {
     const testPositivityRatios = json.map(s => s.metrics.testPositivityRatio).filter(s => !!s && !isNaN(s));
     const maxTestPositivityRatio = Math.max(...testPositivityRatios);
 
-    const magmaScale = scaleSequential(interpolateMagma);
+    const cfrScale = scaleSequential(interpolateWarm);
     const deathScale = scaleSequential(interpolateOrRd);
     const vaccinatedScale = scaleSequential(interpolateGreens);
     const casesScale = scaleSequential(interpolatePuRd);
@@ -124,20 +133,23 @@ const fetchData = (apiKey) => {
     const testPositivityRatioScale = scaleSequential(interpolateInferno);
     const infectionRateScale = scaleSequential(interpolateRdYlGn);
 
-    counties.forEach(county => {
+    const computeStats = (county) => {
       const stats = json.find(s => s.fips === county.fips);
+      delete summaries[county.fips];
       const cfr = !!stats.actuals.deaths && !!stats.actuals.cases ? stats.actuals.deaths / stats.actuals.cases : undefined;
       const vaxPct = !!stats.actuals.vaccinationsCompleted ? stats.actuals.vaccinationsCompleted / stats.population : undefined;
 
+      county.fill.cfr = !!stats.actuals.deaths ? cfrScale(1 - (cfr / maxCFR)) : 'transparent';
       county.fill.deaths = !!stats.actuals.deaths ? deathScale(stats.actuals.deaths / maxDeaths) : 'transparent';
       county.fill.vaccinated = !!vaxPct ? vaccinatedScale(vaxPct / maxVaxPct) : 'transparent';
       county.fill.cases = !!stats.actuals.cases ? casesScale((stats.actuals.cases / stats.population) / maxCases) : 'transparent';
       county.fill.caseDensity = !!stats.metrics.caseDensity ? caseDensityScale(stats.metrics.caseDensity / maxCaseDensity) : 'transparent';
       county.fill.infectionRate = !!stats.metrics.infectionRate  ? infectionRateScale(1 - (stats.metrics.infectionRate / maxInfectionRate)) : 'transparent';
       county.fill.testPositivityRatio = !!stats.metrics.testPositivityRatio ? testPositivityRatioScale(1 - (stats.metrics.testPositivityRatio / maxTestPositivityRatio)) : 'transparent';
-      // county.fill.deaths = deathScale(stats.actuals.deaths / maxDeaths);
-    })
+    }
 
+    counties.forEach(computeStats);
+    Object.keys(toProcess).forEach(key => computeStats(toProcess[key]))
     sendMessage()
   });
 

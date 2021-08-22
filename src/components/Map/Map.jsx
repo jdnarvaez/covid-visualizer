@@ -5,7 +5,7 @@ import { TooltipWithBounds } from '@visx/tooltip';
 import RiskLevel from '../RiskLevel';
 import LoadingAnimation from '../LoadingAnimation';
 import ProgressLine from '../ProgressLine';
-import StateTooltip from '../StateTooltip';
+import { StateTooltip } from '../StateTooltip';
 
 import { Nation } from './Nation';
 import { States } from './States';
@@ -289,17 +289,7 @@ export default React.forwardRef(({
         onMouseMove={onMouseMove}
         onClick={onClick}
       >
-        <svg key="svg-map" viewBox="0 0 975 610" style={{ pointerEvents: 'none' }} data-tip data-for="hover-county-tooltip">
-          <defs>
-            <linearGradient id="solids" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" style="stop-color:rgb(255,0,0);stop-opacity:1" />
-              <stop offset="33%" style="stop-color:rgb(255,0,0);stop-opacity:1" />
-              <stop offset="33%" style="stop-color:rgb(0,255,0);stop-opacity:1" />
-              <stop offset="67%" style="stop-color:rgb(0,255,0);stop-opacity:1" />
-              <stop offset="67%" style="stop-color:rgb(0,0,255);stop-opacity:1" />
-              <stop offset="100%" style="stop-color:rgb(0,0,255);stop-opacity:1" />
-            </linearGradient>
-          </defs>
+        <svg key="svg-map" viewBox="0 0 975 610" style={{ pointerEvents: 'none' }}>
           {!loadingNation && <Counties key={`counties-map`} mapLayer={mapLayer} counties={counties} />}
           <g key="base-map" strokeLinejoin="round" strokeLinecap="round" pointerEvents="none">
             <Nation key="nation" setLoadingNation={setLoadingNation} />

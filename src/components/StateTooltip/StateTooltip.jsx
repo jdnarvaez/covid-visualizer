@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 
 import RiskLevelMetric from '../RiskLevelMetric';
 
@@ -22,7 +22,7 @@ const TooltipMetricVertical = ({ label, value }) => {
   )
 }
 
-export default function StateTooltip({ state, summary }) {
+export const StateTooltip = memo(({ state, summary }) => {
   return (
     <div className="state-tooltip">
       <div className="state-name extra-bold-text">{`${state.name}`}</div>
@@ -36,8 +36,8 @@ export default function StateTooltip({ state, summary }) {
           <TooltipMetricVertical label={`Cases per 100K`} value={Number.parseInt(summary.metrics.caseDensity).toLocaleString()} />
           <TooltipMetricVertical label={`Infection Rate`} value={Number.parseInt(summary.metrics.infectionRate).toLocaleString()} />
           <TooltipMetricVertical label={`Vaccinated`} value={`${Number.parseInt(summary.metrics.vaccinationsCompletedRatio * 100).toFixed(2).toLocaleString()}%`} />
-          <TooltipMetricVertical label={`Hospitalizations`} value={`${Number.parseInt(summary.actuals.hospitalBeds.currentUsageTotal).toLocaleString()}`} />
-          <TooltipMetricVertical label={`ICU Patients`} value={`${Number.parseInt(summary.actuals.icuBeds.currentUsageTotal).toLocaleString()}`} />
+          {summary.actuals.hospitalBeds && <TooltipMetricVertical label={`Hospitalizations`} value={`${Number.parseInt(summary.actuals.hospitalBeds.currentUsageTotal).toLocaleString()}`} />}
+          {summary.actuals.icuBeds && <TooltipMetricVertical label={`ICU Patients`} value={`${Number.parseInt(summary.actuals.icuBeds.currentUsageTotal).toLocaleString()}`} />}
         </div>
         <RiskLevelMetric label={`CDC Transmission`} riskLevel={summary.cdcTransmissionLevel} />
         <RiskLevelMetric label={`Overall Risk`} riskLevel={summary.riskLevels.overall} />
@@ -50,4 +50,4 @@ export default function StateTooltip({ state, summary }) {
       </div>
     </div>
   )
-}
+})

@@ -5,6 +5,12 @@ export const Counties = memo(forwardRef(({ mapLayer, counties }, ref) => {
     let fill;
 
     switch (mapLayer) {
+      case 'cfr':
+        fill = county.fill && county.fill.cfr;
+        break;
+      case 'cdc':
+        fill = county.fill && county.fill.cdc;
+        break;
       case 'risk':
         fill = county.fill && county.fill.riskLevels.overall;
         break;

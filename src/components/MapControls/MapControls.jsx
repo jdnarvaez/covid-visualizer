@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { AiFillWarning, AiOutlineWarning } from 'react-icons/ai';
 import { ImSpinner10 } from 'react-icons/im';
-import { IoHandRight, IoHandRightOutline, IoLayers, IoSkullOutline, IoSkull, IoCubeOutline, IoCube } from 'react-icons/io5';
+import { IoHandRight, IoHandRightOutline, IoLayers, IoSkullOutline, IoSkull, IoCubeOutline, IoCube, IoStatsChartOutline, IoStatsChart } from 'react-icons/io5';
 import { FaBiohazard } from 'react-icons/fa';
 import { GiResize, GiDeathSkull, GiBiohazard } from 'react-icons/gi';
 
@@ -9,7 +9,8 @@ import {
   RiCursorLine, RiCursorFill, RiZoomInLine, RiZoomInFill, RiZoomOutLine, RiZoomOutFill, RiMessage2Fill, RiMessage2Line, RiAlarmWarningLine, RiAlarmWarningFill ,
   RiSyringeFill,
   RiSyringeLine,
-  RiPercentLine, RiPercentFill
+  RiPercentLine, RiPercentFill,
+  RiExchangeLine, RiExchangeFill
 } from 'react-icons/ri';
 
 import { BsCursor, BsCursorFill } from 'react-icons/bs';
@@ -45,7 +46,7 @@ const MapControlDropdownButton = ({ onClick, icon, tooltipId, tooltipContent, is
           {tooltipContent}
         </div>
       </ReactTooltip>}
-      <div className={`map-control-dropdown ${isMouseOver ? 'show' : 'hide'}`}>
+      <div className={`map-control-dropdown ${isMouseOver ? 'show' : 'hide'}`} data-tour="map-layers-dropdown">
         <div className="map-control-drop-down-container overlay">
           {(Array.isArray(children) ? children : [children]).map(child => <div>{child}</div>)}
         </div>
@@ -57,9 +58,14 @@ const MapControlDropdownButton = ({ onClick, icon, tooltipId, tooltipContent, is
 const MapControlLayerButton = ({ className, style, tool, activateTool, activeTool, activeIcon, inactiveIcon, tooltipId, tooltipContent, isTouchDevice, tooltipPlace, layerName }) => {
   const toolId = tool || tooltipId;
 
+  const onClick = (e) => {
+    e.stopPropagation();
+    activateTool(toolId);
+  }
+
   return (
     <React.Fragment>
-      <div className={`map-control-btn map-control-layer-btn ${className ? className : ''}`} style={style} onClick={(e) => activateTool(toolId)} data-tip data-for={tooltipId} data-tour={tooltipId}>
+      <div className={`map-control-btn map-control-layer-btn ${className ? className : ''}`} style={style} onClick={onClick} data-tip data-for={tooltipId} data-tour={tooltipId}>
         <div className="layer-icon">{activeTool === toolId ? activeIcon : inactiveIcon}</div>
         <div className="layer-name">{layerName}</div>
       </div>
@@ -206,7 +212,7 @@ export default function MapControls({ style, fitToViewer, locationLock, toggleLo
         isTouchDevice={isTouchDevice}
         setHighlightedState={setHighlightedState}
         icon={<IoLayers />}
-        dataTour="change-layers"
+        dataTour="map-layers"
       >
         <MapControlLayerButton
           isTouchDevice={isTouchDevice}
@@ -216,6 +222,24 @@ export default function MapControls({ style, fitToViewer, locationLock, toggleLo
           inactiveIcon={<RiAlarmWarningLine />}
           layerName={`Overall Risk Level`}
           tooltipId="risk"
+        />
+        <MapControlLayerButton
+          isTouchDevice={isTouchDevice}
+          activateTool={setMapLayer}
+          activeTool={mapLayer}
+          activeIcon={<RiExchangeFill />}
+          inactiveIcon={<RiExchangeLine />}
+          layerName={`CDC Transmission Level`}
+          tooltipId="cdc"
+        />
+        <MapControlLayerButton
+          isTouchDevice={isTouchDevice}
+          activateTool={setMapLayer}
+          activeTool={mapLayer}
+          activeIcon={<IoStatsChart />}
+          inactiveIcon={<IoStatsChartOutline />}
+          layerName={`Case Fatality Rate`}
+          tooltipId="cfr"
         />
         <MapControlLayerButton
           isTouchDevice={isTouchDevice}

@@ -142,6 +142,41 @@ export const TourSteps = ({ viewer, showIntro, currentLocation, findLocation, ac
         content="Hide or show the dynamic tooltips for states when hovered over."
       />
     },
+    {
+      selector: '[data-tour="map-layers"]',
+      content:
+      <TourStep
+        title="Choose Map Layer"
+        content="Change which fill layer is shown on the map."
+      />
+    },
+    {
+      selector: '[data-tour="map-layers-dropdown"]',
+      action: () => {
+        const node = document.querySelector('.map-control-dropdown');
+
+        if (!node.classList.contains('show')) {
+          node.classList.add('show');
+          setTimeout(() => {
+            window.dispatchEvent(new Event('resize'));
+          }, 500)
+
+        }
+      },
+      content:
+      <TourStep
+        title="Map Layers"
+        content="These options toggle which heat map layer is shown."
+      />
+    },
+    {
+      selector: '[data-tour="map-legend"]',
+      content:
+      <TourStep
+        title="Heat Map Legend"
+        content="This gradient corresponds to the heat map fill of the counties. The color at the top of the gradient is highest risk and the color at the bottom is the lowest."
+      />
+    },
     activeCounty ? {
       selector: '[data-tour="location-information"]',
       content:

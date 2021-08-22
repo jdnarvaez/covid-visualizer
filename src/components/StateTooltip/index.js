@@ -1,2 +1,1 @@
-import StateTooltip from './StateTooltip';
-export default StateTooltip;
+export { StateTooltip } from './StateTooltip';

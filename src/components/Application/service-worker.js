@@ -7,7 +7,7 @@ self.addEventListener('activate', event => {
 });
 
 self.addEventListener('fetch', event => {
-  if (event.request.url.indexOf('covidactnow') < 0 && event.request.url.indexOf('basemap') < 0) return;
+  if (event.request.url.indexOf('covidactnow') < 0 && event.request.url.indexOf('basemap') < 0 && event.request.url.indexOf('geometry') < 0) return;
 
   event.respondWith(async function() {
     const cache = await caches.open('covid-act-now');

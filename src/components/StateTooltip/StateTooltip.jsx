@@ -25,7 +25,7 @@ const TooltipMetricVertical = ({ label, value }) => {
 export default function StateTooltip({ state, summary }) {
   return (
     <div className="state-tooltip">
-      <div className="state-name extra-bold-text">{`${state.properties.name}`}</div>
+      <div className="state-name extra-bold-text">{`${state.name}`}</div>
       <div className="tooltip-content">
         <TooltipMetricHorizontal label={`Population`} value={Number.parseInt(summary.population).toLocaleString()} />
         <div className="tooltip-metric-group">

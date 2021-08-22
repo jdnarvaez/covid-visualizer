@@ -160,7 +160,7 @@ export const TourSteps = ({ viewer, showIntro, currentLocation, findLocation, ac
         actionCaption={'Visit the COVID ActNow website'}
       />
     } : undefined,
-    activeCounty && activeCounty.properties.cbsa && activeCounty.properties.cbsa.NAMELSAD ? {
+    activeCounty && activeCounty.cbsa ? {
       selector: '[data-tour="cbsa-info"]',
       content:
       <TourStep

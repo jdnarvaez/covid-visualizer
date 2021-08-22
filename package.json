@@ -2,6 +2,7 @@
   "name": "covid-visualizer",
   "version": "0.0.2-SNAPSHOT",
   "dependencies": {
+    "@koale/useworker": "^4.0.2",
     "@turf/boolean-contains": "^6.5.0",
     "@turf/boolean-point-in-polygon": "^6.5.0",
     "@turf/intersect": "^6.5.0",
@@ -9,22 +10,28 @@
     "@types/react": "16.4.16",
     "@visx/xychart": "v2.0.0-alpha.0",
     "abort-controller": "^3.0.0",
-    "d3-array": "^2.4.0",
+    "d3-array": "^3.0.0",
     "d3-geo": "^3.0.1",
+    "d3-scale": "^4.0.0",
+    "d3-scale-chromatic": "^3.0.0",
     "d3-time-format": "^4.0.0",
     "framer-motion": "^3.0.0",
+    "internmap": "^2.0.0",
     "luxon": "^1.22.0",
     "oboe": "^2.1.5",
     "preact": "^10.5.14",
     "prop-types": "^15.6.2",
     "react": "^16.5.2",
     "react-dom": "^16.5.2",
+    "react-dropdown": "^1.9.2",
     "react-favicon": "0.0.23",
+    "react-hooks-worker": "^1.0.0",
     "react-hotkeys-hook": "^3.4.0",
     "react-icons": "^4.2.0",
     "react-scripts": "2.0.4",
     "react-spring": "^9.2.4",
     "react-svg-pan-zoom": "^3.10.0",
+    "react-tiny-crossfade": "^2.0.0",
     "react-tooltip": "^4.2.21",
     "react-use-gesture": "^9.1.3",
     "react-visibility-sensor": "^5.1.1",
@@ -34,8 +41,9 @@
     "topojson-simplify": "^3.0.3"
   },
   "scripts": {
-    "start": "webpack-dev-server --config webpack.config.js --mode development --host 0.0.0.0 --https",
-    "build": "webpack --config webpack.config.js --mode production"
+    "start": "webpack-dev-server --config webpack.config.js --mode development --host 0.0.0.0",
+    "build": "webpack --config webpack.config.js --mode production",
+    "create-geometry": "node --max-old-space-size=8192 ./scripts/create_geometry.js"
   },
   "eslintConfig": {
     "extends": "react-app"

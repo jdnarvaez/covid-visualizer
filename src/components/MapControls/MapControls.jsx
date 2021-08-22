@@ -1,8 +1,17 @@
-import React from 'react';
+import React, { useEffect, useState, useRef } from 'react';
+import { AiFillWarning, AiOutlineWarning } from 'react-icons/ai';
 import { ImSpinner10 } from 'react-icons/im';
-import { IoHandRight, IoHandRightOutline } from 'react-icons/io5';
-import { GiResize } from 'react-icons/gi';
-import { RiCursorLine, RiCursorFill, RiZoomInLine, RiZoomInFill, RiZoomOutLine, RiZoomOutFill, RiMessage2Fill, RiMessage2Line } from 'react-icons/ri';
+import { IoHandRight, IoHandRightOutline, IoLayers, IoSkullOutline, IoSkull, IoCubeOutline, IoCube } from 'react-icons/io5';
+import { FaBiohazard } from 'react-icons/fa';
+import { GiResize, GiDeathSkull, GiBiohazard } from 'react-icons/gi';
+
+import {
+  RiCursorLine, RiCursorFill, RiZoomInLine, RiZoomInFill, RiZoomOutLine, RiZoomOutFill, RiMessage2Fill, RiMessage2Line, RiAlarmWarningLine, RiAlarmWarningFill ,
+  RiSyringeFill,
+  RiSyringeLine,
+  RiPercentLine, RiPercentFill
+} from 'react-icons/ri';
+
 import { BsCursor, BsCursorFill } from 'react-icons/bs';
 import { FiHelpCircle } from 'react-icons/fi';
 import { TiChartLineOutline, TiChartLine } from 'react-icons/ti';
@@ -10,11 +19,49 @@ import ReactTooltip from 'react-tooltip';
 
 import './MapControls.css';
 
-function MapControlToggleButton({ className, style, tool, activateTool, activeTool, activeIcon, inactiveIcon, tooltipId, tooltipContent, isTouchDevice }) {
+const MapControlDropdownButton = ({ onClick, icon, tooltipId, tooltipContent, isTouchDevice, children, dataTour, tooltipPlace, setHighlightedState }) => {
+  const [isMouseOver, setIsMouseOver] = useState(false);
+  const ref = useRef(null);
+
+  useEffect(() => {
+    if (isMouseOver) {
+      setHighlightedState(null);
+    }
+  }, [isMouseOver])
+
+  return (
+    <div className="map-control-btn map-control-dropdown-btn" data-tip data-for={tooltipId} data-tour={tooltipId || dataTour} onClick={() => setIsMouseOver(!isMouseOver)} onMouseEnter={() => setIsMouseOver(true)} onMouseOver={() => setIsMouseOver(true)} onMouseLeave={() => setIsMouseOver(false)} ref={ref}>
+      {icon}
+      {!isTouchDevice && tooltipId && tooltipContent && <ReactTooltip
+        id={tooltipId}
+        aria-haspopup='true'
+        effect="solid"
+        delayShow={1500}
+        className="tooltip"
+        clickable={true}
+        place={tooltipPlace}
+      >
+        <div style={{ maxWidth: `${.3 * innerWidth}px`, fontSize: '13px' }}>
+          {tooltipContent}
+        </div>
+      </ReactTooltip>}
+      <div className={`map-control-dropdown ${isMouseOver ? 'show' : 'hide'}`}>
+        <div className="map-control-drop-down-container overlay">
+          {(Array.isArray(children) ? children : [children]).map(child => <div>{child}</div>)}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+const MapControlLayerButton = ({ className, style, tool, activateTool, activeTool, activeIcon, inactiveIcon, tooltipId, tooltipContent, isTouchDevice, tooltipPlace, layerName }) => {
+  const toolId = tool || tooltipId;
+
   return (
     <React.Fragment>
-      <div className={`map-control-btn ${className ? className : ''}`} style={style} onClick={(e) => activateTool(tool)} data-tip data-for={tooltipId} data-tour={tooltipId}>
-        {activeTool === tool ? activeIcon : inactiveIcon}
+      <div className={`map-control-btn map-control-layer-btn ${className ? className : ''}`} style={style} onClick={(e) => activateTool(toolId)} data-tip data-for={tooltipId} data-tour={tooltipId}>
+        <div className="layer-icon">{activeTool === toolId ? activeIcon : inactiveIcon}</div>
+        <div className="layer-name">{layerName}</div>
       </div>
       {!isTouchDevice && tooltipId && tooltipContent && <ReactTooltip
         id={tooltipId}
@@ -23,6 +70,7 @@ function MapControlToggleButton({ className, style, tool, activateTool, activeTo
         delayShow={1500}
         className="tooltip"
         clickable={true}
+        place={tooltipPlace}
       >
         <div style={{ maxWidth: `${.3 * innerWidth}px`, fontSize: '13px' }}>
           {tooltipContent}
@@ -32,7 +80,32 @@ function MapControlToggleButton({ className, style, tool, activateTool, activeTo
   )
 }
 
-function MapControlButton({ onClick, icon, tooltipId, tooltipContent, isTouchDevice }) {
+const MapControlToggleButton = ({ className, style, tool, activateTool, activeTool, activeIcon, inactiveIcon, tooltipId, tooltipContent, isTouchDevice, tooltipPlace }) => {
+  const toolId = tool || tooltipId;
+
+  return (
+    <React.Fragment>
+      <div className={`map-control-btn ${className ? className : ''}`} style={style} onClick={(e) => activateTool(toolId)} data-tip data-for={tooltipId} data-tour={tooltipId}>
+        {activeTool === toolId ? activeIcon : inactiveIcon}
+      </div>
+      {!isTouchDevice && tooltipId && tooltipContent && <ReactTooltip
+        id={tooltipId}
+        aria-haspopup='true'
+        effect="solid"
+        delayShow={1500}
+        className="tooltip"
+        clickable={true}
+        place={tooltipPlace}
+      >
+        <div style={{ maxWidth: `${.3 * innerWidth}px`, fontSize: '13px' }}>
+          {tooltipContent}
+        </div>
+      </ReactTooltip>}
+    </React.Fragment>
+  )
+}
+
+const MapControlButton = ({ onClick, icon, tooltipId, tooltipContent, isTouchDevice, tooltipPlace }) => {
   return (
     <div className="map-control-btn" onClick={onClick} data-tip data-for={tooltipId} data-tour={tooltipId}>
       {icon}
@@ -43,6 +116,7 @@ function MapControlButton({ onClick, icon, tooltipId, tooltipContent, isTouchDev
         delayShow={1500}
         className="tooltip"
         clickable={true}
+        place={tooltipPlace}
       >
         <div style={{ maxWidth: `${.3 * innerWidth}px`, fontSize: '13px' }}>
           {tooltipContent}
@@ -52,7 +126,7 @@ function MapControlButton({ onClick, icon, tooltipId, tooltipContent, isTouchDev
   )
 }
 
-export default function MapControls({ style, fitToViewer, locationLock, toggleLocationLock, activeTool, activateTool, showStats, toggleStats, setIsTourOpen, locating, isTouchDevice, toggleTooltips, showTooltips }) {
+export default function MapControls({ style, fitToViewer, locationLock, toggleLocationLock, activeTool, activateTool, showStats, toggleStats, setIsTourOpen, locating, isTouchDevice, toggleTooltips, showTooltips, mapLayer, setMapLayer, setHighlightedState }) {
   return (
     <div className="map-controls overlay" data-tour="map-controls">
       <MapControlToggleButton
@@ -128,6 +202,76 @@ export default function MapControls({ style, fitToViewer, locationLock, toggleLo
         tooltipId="toggle-tooltips"
         tooltipContent={<p>{`Tap here to ${showTooltips ? 'hide' : 'show'} tooltips for each state.`}</p>}
       />
+      <MapControlDropdownButton
+        isTouchDevice={isTouchDevice}
+        setHighlightedState={setHighlightedState}
+        icon={<IoLayers />}
+        dataTour="change-layers"
+      >
+        <MapControlLayerButton
+          isTouchDevice={isTouchDevice}
+          activateTool={setMapLayer}
+          activeTool={mapLayer}
+          activeIcon={<RiAlarmWarningFill />}
+          inactiveIcon={<RiAlarmWarningLine />}
+          layerName={`Overall Risk Level`}
+          tooltipId="risk"
+        />
+        <MapControlLayerButton
+          isTouchDevice={isTouchDevice}
+          activateTool={setMapLayer}
+          activeTool={mapLayer}
+          activeIcon={<IoSkull />}
+          inactiveIcon={<IoSkullOutline />}
+          layerName={`Total Deaths`}
+          tooltipId="deaths"
+        />
+        <MapControlLayerButton
+          isTouchDevice={isTouchDevice}
+          activateTool={setMapLayer}
+          activeTool={mapLayer}
+          activeIcon={<RiSyringeFill />}
+          inactiveIcon={<RiSyringeLine />}
+          layerName={`Vaccinated`}
+          tooltipId="vaccinated"
+        />
+        <MapControlLayerButton
+          isTouchDevice={isTouchDevice}
+          activateTool={setMapLayer}
+          activeTool={mapLayer}
+          activeIcon={<AiFillWarning />}
+          inactiveIcon={<AiOutlineWarning />}
+          layerName={`Cases`}
+          tooltipId="cases"
+        />
+        <MapControlLayerButton
+          isTouchDevice={isTouchDevice}
+          activateTool={setMapLayer}
+          activeTool={mapLayer}
+          activeIcon={<IoCube />}
+          inactiveIcon={<IoCubeOutline />}
+          layerName={`Case Density`}
+          tooltipId="caseDensity"
+        />
+        <MapControlLayerButton
+          isTouchDevice={isTouchDevice}
+          activateTool={setMapLayer}
+          activeTool={mapLayer}
+          activeIcon={<FaBiohazard />}
+          inactiveIcon={<GiBiohazard />}
+          layerName={`Infection Rate`}
+          tooltipId="infectionRate"
+        />
+        <MapControlLayerButton
+          isTouchDevice={isTouchDevice}
+          activateTool={setMapLayer}
+          activeTool={mapLayer}
+          activeIcon={<RiPercentFill />}
+          inactiveIcon={<RiPercentLine />}
+          layerName={`Test Positivity`}
+          tooltipId="testPositivityRatio"
+        />
+      </MapControlDropdownButton>
       <MapControlButton
         isTouchDevice={isTouchDevice}
         onClick={() => setIsTourOpen(true)}

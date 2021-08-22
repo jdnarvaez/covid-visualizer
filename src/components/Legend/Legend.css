@@ -1,0 +1,9 @@
+.map-legend {
+  width: 21px;
+  height: 159px;
+  pointer-events: none;
+  position: absolute;
+  bottom: 65px;
+  left: 10px;
+  z-index: 10;
+}

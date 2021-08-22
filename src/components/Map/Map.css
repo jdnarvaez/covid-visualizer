@@ -14,7 +14,7 @@
 
 .county-shape {
   stroke: var(--light);
-  fill: rgb(240, 240, 240);
+  transition: fill .5s linear;
 }
 
 .selected-county {

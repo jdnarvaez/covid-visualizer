@@ -2,17 +2,13 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { DateTime } from 'luxon';
 import { INITIAL_VALUE, TOOL_NONE } from 'react-svg-pan-zoom';
 import Tour from 'reactour'
-import { geoPath, geoBounds, geoAlbersUsa, geoCentroid } from 'd3-geo';
-import { feature, mesh, bbox } from 'topojson-client';
-import { timeFormat } from 'd3-time-format';
-import { scaleQuantize } from 'd3-scale';
 import { motion, AnimateSharedLayout } from 'framer-motion';
 import { useHotkeys } from 'react-hotkeys-hook';
 import Favicon from 'react-favicon';
+import { useWorker } from 'react-hooks-worker';
+
 import { useToggle, useWindowSize } from '../../hooks';
-
 import Fonts from '../Fonts';
-
 import LoadingAnimation from '../LoadingAnimation';
 import Map from '../Map';
 import AppHeader from '../AppHeader';
@@ -20,7 +16,8 @@ import Metric from '../Metric';
 import Stats from '../Stats';
 import { TourSteps } from '../InteractiveHelp';
 import PoweredBy from '../PoweredBy';
-
+import { CountiesWorker } from '../Map/Counties';
+import { Legend } from '../Legend';
 import favicon from '../../site/favicon/favicon.ico';
 import serviceworker from './service-worker.js';
 
@@ -48,6 +45,9 @@ export default function Application({ apiKey }) {
   const [showTooltips, toggleTooltips] = useToggle(new URL(window.location).searchParams.get('tips') === 'true' || !new URL(window.location).searchParams.has('tips')  ? true : false);
   const [stateSummaries, setStateSummaries] = useState([]);
   const [highlightedState, setHighlightedState] = useState(null);
+  const [mapLayer, setMapLayer] = useState(new URL(window.location).searchParams.get('layer') || 'risk');
+  const [loadingCounties, setLoadingCounties] = useState(true);
+  const { result: counties } = useWorker(CountiesWorker, apiKey);
   const didMountRef = useRef(false);
   const viewer = useRef(null);
   const appHeader = useRef(null);
@@ -84,6 +84,18 @@ export default function Application({ apiKey }) {
       }
     }
   })
+
+  useEffect(() => {
+   if (!counties) {
+     return;
+   }
+
+   if (loadingCounties && counties.length === 3220) {
+     setLoadingCounties(false);
+   } else if (!loadingCounties && counties.length !== 3220) {
+     setLoadingCounties(true);
+   }
+  }, [counties])
 
   useEffect(() => {
     const controller = new AbortController();
@@ -146,7 +158,7 @@ export default function Application({ apiKey }) {
       const url = new URL(window.location);
 
       if (activeCounty) {
-        url.searchParams.set('county', activeCounty.id);
+        url.searchParams.set('county', activeCounty.fips);
       } else {
         url.searchParams.delete('county');
       }
@@ -156,6 +168,12 @@ export default function Application({ apiKey }) {
       didMountRef.current = true
     }
   }, [activeCounty]);
+
+  useEffect(() => {
+    const url = new URL(window.location);
+    url.searchParams.set('layer', mapLayer)
+    window.history.pushState({}, '', url);
+  }, [mapLayer]);
 
   useEffect(() => {
     if (!currentLocation || !interactiveTour.current || !interactiveTour.current.state.isOpen) {
@@ -177,8 +195,8 @@ export default function Application({ apiKey }) {
         return;
       }
 
-      setShowIntro(true);
-      setIsTourOpen(true);
+      // setShowIntro(true);
+      // setIsTourOpen(true);
     }, 10)
   }, [])
 
@@ -190,10 +208,11 @@ export default function Application({ apiKey }) {
     <div key="application" style={{ height: `${size.height}px`, width: `${size.width}px`, overflowY: 'hidden' }}>
       <Fonts key="fonts" />
       <Favicon key="favicon" url={favicon} />
-      <PoweredBy style={{ position: 'absolute', bottom: '15px', left: '15px', zIndex: 1 }} />
-      <AnimateSharedLayout key="animate-layout">
+      <PoweredBy style={{ position: 'absolute', bottom: '0px', left: '0px', zIndex: 1 }} />
+      <Legend mapLayer={mapLayer} />
+      <AnimateSharedLayout key="animate-layout" type="crossfade">
         <div className="app" key="app" style={{ height: `${size.height}px`, width: `${size.width}px`, overflowY: 'hidden' }}>
-          <Map
+          {counties && <Map
             key="viewer"
             width={size.width}
             height={size.height}
@@ -213,9 +232,12 @@ export default function Application({ apiKey }) {
             showTooltips={showTooltips}
             highlightedState={highlightedState}
             setHighlightedState={setHighlightedState}
+            mapLayer={mapLayer}
+            counties={counties}
+            loadingCounties={loadingCounties}
             ref={viewer}
             apiKey={apiKey}
-          />
+          />}
           <AppHeader
             key="app-header"
             width={size.width}
@@ -234,11 +256,14 @@ export default function Application({ apiKey }) {
             isTouchDevice={isTouchDevice}
             showTooltips={showTooltips}
             toggleTooltips={toggleTooltips}
+            mapLayer={mapLayer}
+            setMapLayer={setMapLayer}
+            setHighlightedState={setHighlightedState}
             ref={appHeader}
           />
           {activeCounty &&
             <Stats
-              key={`stats-${activeCounty.id}`}
+              key={`stats-${activeCounty.fips}`}
               width={size.width}
               height={size.height}
               relativeTo={appHeader}

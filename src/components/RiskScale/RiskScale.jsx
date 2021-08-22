@@ -11,7 +11,7 @@ function RiskLevelUnit({ summary, riskLevel }) {
   )
 }
 
-export default function RiskScale({ summary, activeCounty, isTouchDevice }) {
+export default function RiskScale({ summary, isTouchDevice }) {
   return (
     <div className="risk-scale" data-tip data-for='risk-scale' data-tour="risk-scale">
       {RiskLevel.values().reverse().map(riskLevel => <RiskLevelUnit key={riskLevel} summary={summary} riskLevel={riskLevel} />)}

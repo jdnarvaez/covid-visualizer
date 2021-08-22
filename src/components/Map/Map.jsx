@@ -1,10 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { INITIAL_VALUE, ReactSVGPanZoom } from 'react-svg-pan-zoom';
-import { geoPath, geoBounds, geoAlbersUsa, geoCentroid } from 'd3-geo';
-import { feature, mesh, bbox } from 'topojson-client';
-import oboe from 'oboe';
-import VisibilitySensor from 'react-visibility-sensor';
-
 import { TooltipWithBounds } from '@visx/tooltip';
 
 import RiskLevel from '../RiskLevel';
@@ -12,24 +7,45 @@ import LoadingAnimation from '../LoadingAnimation';
 import ProgressLine from '../ProgressLine';
 import StateTooltip from '../StateTooltip';
 
+import { Nation } from './Nation';
+import { States } from './States';
+import { Counties } from './Counties';
+
 import './Map.css';
 
-const projection = geoAlbersUsa().scale(1300).translate([487.5, 305]);
-const path = geoPath(projection);
+export default React.forwardRef(({
+  apiKey,
+  width,
+  height,
+  activeTool,
+  activateTool,
+  activeCounty,
+  activateCounty,
+  summary,
+  activeMetric,
+  locationLock,
+  currentLocation,
+  setCurrentLocation,
+  locating,
+  setLocating,
+  isTourOpen,
+  stateSummaries,
+  showTooltips,
+  highlightedState,
+  setHighlightedState,
+  mapLayer,
+  counties,
+  loadingCounties,
 
-export default React.forwardRef(({ apiKey, width, height, activeTool, activateTool, activeCounty, activateCounty, summary, activeMetric, locationLock, currentLocation, setCurrentLocation, setLocating, isTourOpen, stateSummaries, showTooltips, highlightedState, setHighlightedState }, ref) => {
+}, ref) => {
   const [viewerState, setViewerState] = useState(INITIAL_VALUE);
-  const [baseMap, setBaseMap] = useState(undefined);
-  const [states, setStates] = useState([]);
-  const [counties, setCounties] = useState([]);
   const [countyHighlight, setCountyHighlight] = useState(null);
-  const [countyShapes, setCountyShapes] = useState([]);
-  const [parsing, setParsing] = useState(true);
   const [stateHighlight, setStateHighlight] = useState(null);
   const [tooltip, setTooltip] = useState(null);
+  const [loadingNation, setLoadingNation] = useState(true);
   const didMountRef = useRef(false);
-  const overlayRef = React.createRef();
   const valueUpdaterRef = React.createRef();
+  const states = useRef(null);
 
   useEffect(() => {
     if (!didMountRef.current) {
@@ -37,52 +53,60 @@ export default React.forwardRef(({ apiKey, width, height, activeTool, activateTo
     }
 
     if (locationLock) {
-      setParsing(true);
       setLocating(true);
 
-      navigator.geolocation.getCurrentPosition(position => {
-        const { latitude, longitude } = position.coords;
-        const coords = projection([longitude,latitude]);
-        const location = { x: coords[0], y: coords[1] }
-        ref.current.fitSelection(location.x - 25, location.y - 25, 75, 75);
-        setCurrentLocation(location);
-        const url = new URL(window.location);
-        url.searchParams.set('location', btoa(JSON.stringify(location)))
-        window.history.pushState({}, '', url);
+      import(
+        /* webpackChunkName: "d3-geo" */
+        /* webpackMode: "lazy" */
+        'd3-geo'
+      ).then(({ geoPath, geoAlbersUsa }) => {
+        const projection = geoAlbersUsa().scale(1300).translate([487.5, 305]);
+        const path = geoPath(projection);
 
-        if (counties) {
-          fetch(`https://geo.fcc.gov/api/census/area?lat=${latitude}&lon=${longitude}&format=json`)
-          .then(response => response.json())
-          .then(response => {
-            if (response.results) {
-              const location = response.results[0];
-              const fips = location.county_fips;
-              const county = counties.find(county => county.properties.fips === fips)
+        navigator.geolocation.getCurrentPosition(position => {
+          const { latitude, longitude } = position.coords;
+          const coords = projection([longitude,latitude]);
+          const location = { x: coords[0], y: coords[1] }
+          ref.current.fitSelection(location.x - 25, location.y - 25, 75, 75);
+          setCurrentLocation(location);
+          const url = new URL(window.location);
+          url.searchParams.set('location', btoa(JSON.stringify(location)))
+          window.history.pushState({}, '', url);
 
-              if (county) {
-                activateCounty(county);
+          if (counties) {
+            fetch(`https://geo.fcc.gov/api/census/area?lat=${latitude}&lon=${longitude}&format=json`)
+            .then(response => response.json())
+            .then(response => {
+              if (response.results) {
+                const location = response.results[0];
+                const fips = location.county_fips;
+                const county = counties.find(c => c.fips === fips);
+
+                if (county) {
+                  activateCounty(county);
+                }
               }
-            }
 
-            setParsing(false);
+              setLocating(false);
+            })
+            .catch(err => {
+              setLocating(false);
+            })
+          } else {
             setLocating(false);
-          })
-          .catch(err => {
-            setParsing(false);
-            setLocating(false);
-          })
-        } else {
-          setParsing(false);
+          }
+        }, error => {
           setLocating(false);
-        }
-      }, error => {
-        setParsing(false);
+          console.error(error);
+        }, {
+          enableHighAccuracy: true,
+          timeout: 5000
+        });
+      })
+      .catch(error => {
         setLocating(false);
         console.error(error);
-      }, {
-        enableHighAccuracy: true,
-        timeout: 5000
-      });
+      })
     } else {
       setCurrentLocation(undefined);
       setLocating(false);
@@ -90,83 +114,8 @@ export default React.forwardRef(({ apiKey, width, height, activeTool, activateTo
   }, [locationLock]);
 
   useEffect(() => {
-    import(
-      /* webpackChunkName: "basemap" */
-      /* webpackMode: "lazy" */
-      '../../data/processed/counties-10m.json'
-    ).then(module => {
-      const UnitedStates = module.default;
-
-      UnitedStates.objects.counties.geometries.forEach(county => {
-        if (!county.properties.state) {
-          return;
-        }
-
-        Object.assign(county, feature(UnitedStates, county))
-      })
-
-      UnitedStates.objects.states.geometries.forEach(state => Object.assign(state, feature(UnitedStates, state)))
-
-      const map = (
-        <g key="base-map" strokeLinejoin="round" strokeLinecap="round" pointerEvents="none">
-          {UnitedStates.objects.states.geometries.map(state => <path key={state.id} stroke="var(--white)" d={`${path(state)}`} fill="none" strokeWidth="1.25" />)}
-          <path key="nation" stroke="var(--white)" d={`${path(feature(UnitedStates, UnitedStates.objects.nation))}`} fill="none" strokeWidth="1.25" />
-        </g>
-      )
-
-      setStates(UnitedStates.objects.states.geometries);
-      setCounties(UnitedStates.objects.counties.geometries);
-      setBaseMap(map);
-    })
-  }, []);
-
-  useEffect(() => {
-    if (counties.length === 0) {
-      return;
-    }
-
-    oboe(`https://api.covidactnow.org/v2/counties.json?apiKey=${apiKey}`)
-    .node('{fips actuals metrics riskLevels}', (node, nodePath, ancestors) => {
-      const county = counties.find(county => county.id === node.fips);
-
-      if (county && county.properties.state) {
-        countyShapes.push(
-          <VisibilitySensor partialVisibility={true}>
-            {({isVisible}) =>
-              <path
-                style={{ visibility: isVisible ? 'visible' : 'hidden' }}
-                key={county.id}
-                id={county.id}
-                state-fips={county.properties.stateFips}
-                className={`county-shape ${RiskLevel.valueOf(node.riskLevels.overall)}`}
-                fillOpacity=".8"
-                strokeWidth=".25"
-                pointerEvents="none"
-                zIndex="1"
-                d={`${path(county)}`}
-              />
-            }
-          </VisibilitySensor>
-        )
-
-        setCountyShapes([...countyShapes])
-      }
-    })
-    .on('done', function(json) {
-      this.forget()
-      setParsing(false)
-    });
-  }, [counties]);
-
-  useEffect(() => {
-    if (!baseMap) {
-      return;
-    }
-
     const url = new URL(window.location);
     const initialView = url.searchParams.get('view')
-    const initialCounty = url.searchParams.get('county')
-    const location = url.searchParams.get('location')
 
     if (initialView) {
       const value = JSON.parse(JSON.stringify(ref.current.getValue()));
@@ -175,9 +124,19 @@ export default React.forwardRef(({ apiKey, width, height, activeTool, activateTo
     } else {
       ref.current.fitToViewer('center', 'center');
     }
+  }, []);
 
-    if (initialCounty) {
-      const county = counties.find(c => c.id === initialCounty);
+  useEffect(() => {
+    if (loadingCounties) {
+      return;
+    }
+
+    const url = new URL(window.location);
+    const fips = url.searchParams.get('county');
+    const location = url.searchParams.get('location')
+
+    if (fips) {
+      const county = counties.find(c => c.fips === fips);
 
       if (county) {
         activateCounty(county);
@@ -187,25 +146,23 @@ export default React.forwardRef(({ apiKey, width, height, activeTool, activateTo
     if (location) {
       setCurrentLocation(JSON.parse(atob(location)));
     }
-  }, [baseMap]);
+  }, [loadingCounties])
 
   useEffect(() => {
     if (!activeCounty) {
       return;
     }
 
-    const centroid = path.centroid(activeCounty);
-
     setCountyHighlight(
       <path
         data-tour="county-highlight"
-        key={`selected-county-${activeCounty.id}`}
-        style={{ transformOrigin: `${centroid[0]}px ${centroid[1]}px` }}
+        key={`selected-county-${activeCounty.fips}`}
+        style={{ transformOrigin: `${activeCounty.centroid[0]}px ${activeCounty.centroid[1]}px` }}
         className={`selected-county hithere ${summary ? RiskLevel.valueOf(summary.riskLevels.overall) : ''}`}
         fillOpacity="1"
         strokeWidth=".125"
         pointerEvents="none"
-        d={`${path(activeCounty)}`}
+        d={activeCounty.path}
       />
     )
   }, [activeCounty, summary])
@@ -217,21 +174,18 @@ export default React.forwardRef(({ apiKey, width, height, activeTool, activateTo
       return;
     }
 
-    const centroid = path.centroid(highlightedState);
-    const bounds = path.bounds(highlightedState);
-
     setStateHighlight(
       <path
         data-tour="state-highlight"
-        key={`selected-state-${highlightedState.id}`}
-        style={{ transformOrigin: `${centroid[0]}px ${centroid[1]}px` }}
+        key={`selected-state-${highlightedState.fips}`}
+        style={{ transformOrigin: `${highlightedState.centroid[0]}px ${highlightedState.centroid[1]}px` }}
         className={`selected-state`}
         fillOpacity="0"
         fill="none"
         strokeWidth="3"
         pointerEvents="none"
         stroke="white"
-        d={`${path(highlightedState)}`}
+        d={highlightedState.path}
       />
     )
   }, [highlightedState])
@@ -258,7 +212,7 @@ export default React.forwardRef(({ apiKey, width, height, activeTool, activateTo
       top += topOverflow;
     }
 
-    const stateSummary = stateSummaries.find(s => s.fips === highlightedState.id);
+    const stateSummary = stateSummaries.find(s => s.fips === highlightedState.fips);
 
     setTooltip(<TooltipWithBounds
       key={Math.random()}
@@ -272,7 +226,7 @@ export default React.forwardRef(({ apiKey, width, height, activeTool, activateTo
   }, [stateHighlight, highlightedState, stateSummaries, showTooltips])
 
   const onChangeValue = (value) => {
-    if (baseMap) {
+    if (!loadingNation) {
       if (didMountRef.current) {
         clearTimeout(valueUpdaterRef.current)
 
@@ -292,18 +246,22 @@ export default React.forwardRef(({ apiKey, width, height, activeTool, activateTo
   }
 
   const onMouseMove = (event) => {
-    const id = event.originalEvent.target.getAttribute('state-fips');
+    const fips = event.originalEvent.target.getAttribute('state-fips');
 
-    if (id) {
-      setHighlightedState(states.find(s => s.id === id));
+    if (fips && states.current) {
+      setHighlightedState(states.current.byFips(fips));
     } else {
       setHighlightedState(null)
     }
   }
 
   const onClick = (event) => {
-    const id = event.originalEvent.target.getAttribute('id');
-    const county = counties.find(county => county.id === id);
+    if (!counties) {
+      return;
+    }
+
+    const fips = event.originalEvent.target.getAttribute('id');
+    const county = counties.find(c => c.fips === fips);
 
     if (county) {
       activateCounty(county);
@@ -311,9 +269,8 @@ export default React.forwardRef(({ apiKey, width, height, activeTool, activateTo
   }
 
   return (
-    baseMap ? (
     <>
-      {parsing && <ProgressLine width={width} />}
+      {(loadingNation || locating || loadingCounties) && <ProgressLine width={width} />}
       {tooltip}
       <ReactSVGPanZoom
         key="viewer"
@@ -343,10 +300,11 @@ export default React.forwardRef(({ apiKey, width, height, activeTool, activateTo
               <stop offset="100%" style="stop-color:rgb(0,0,255);stop-opacity:1" />
             </linearGradient>
           </defs>
-          <g>
-            {countyShapes}
+          {!loadingNation && <Counties key={`counties-map`} mapLayer={mapLayer} counties={counties} />}
+          <g key="base-map" strokeLinejoin="round" strokeLinecap="round" pointerEvents="none">
+            <Nation key="nation" setLoadingNation={setLoadingNation} />
+            <States key="states" ref={states} />
           </g>
-          {baseMap}
           {stateHighlight}
           {countyHighlight}
           {currentLocation && <g>
@@ -369,6 +327,5 @@ export default React.forwardRef(({ apiKey, width, height, activeTool, activateTo
         </svg>
       </ReactSVGPanZoom>
     </>
-    ) : <LoadingAnimation />
   )
 })

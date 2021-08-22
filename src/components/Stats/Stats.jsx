@@ -41,7 +41,11 @@ export default function Stats({ apiKey, relativeTo, activeCounty, activeMetric, 
   const resizeHandleRef = useRef(null);
 
   useEffect(() => {
-    import('../../data/annotations.json').then(module => setAnnotations(module.default))
+    import(
+      /* webpackChunkName: "annotations" */
+      /* webpackMode: "lazy" */
+      '../../data/annotations.json'
+    ).then(module => setAnnotations(module.default))
   }, []);
 
   const fetchSummary = () => {
@@ -50,20 +54,19 @@ export default function Stats({ apiKey, relativeTo, activeCounty, activeMetric, 
 
     switch (metricLevel) {
       case 'state':
-        url = `https://api.covidactnow.org/v2/state/${activeCounty.properties.state}.json?apiKey=${apiKey}`;
+        url = `https://api.covidactnow.org/v2/state/${activeCounty.state.code}.json?apiKey=${apiKey}`;
       break;
       case 'country':
         url = `https://api.covidactnow.org/v2/country/US.json?apiKey=${apiKey}`;
       break;
       case 'cbsa':
-        if (activeCounty.properties.cbsa) {
-          url = `https://api.covidactnow.org/v2/cbsa/${activeCounty.properties.cbsa.CBSAFP}.json?apiKey=${apiKey}`;
+        if (activeCounty.cbsa) {
+          url = `https://api.covidactnow.org/v2/cbsa/${activeCounty.cbsa.fips}.json?apiKey=${apiKey}`;
         }
-
       break;
       case 'county':
       default:
-        url = `https://api.covidactnow.org/v2/county/${activeCounty.id}.json?apiKey=${apiKey}`;
+        url = `https://api.covidactnow.org/v2/county/${activeCounty.fips}.json?apiKey=${apiKey}`;
       break;
     }
 
@@ -82,7 +85,7 @@ export default function Stats({ apiKey, relativeTo, activeCounty, activeMetric, 
       activateSummary(response);
     })
     .catch(error => {
-      console.log(error);
+      console.error(error);
     })
 
     setSummaryAbortController(controller);
@@ -94,11 +97,11 @@ export default function Stats({ apiKey, relativeTo, activeCounty, activeMetric, 
 
     switch (metricLevel) {
       case 'state':
-        url = `https://api.covidactnow.org/v2/state/${activeCounty.properties.state}.timeseries.json?apiKey=${apiKey}`;
+        url = `https://api.covidactnow.org/v2/state/${activeCounty.state.code}.timeseries.json?apiKey=${apiKey}`;
       break;
       case 'cbsa':
-        if (activeCounty.properties.cbsa) {
-          url = `https://api.covidactnow.org/v2/cbsa/${activeCounty.properties.cbsa.CBSAFP}.timeseries.json?apiKey=${apiKey}`;
+        if (activeCounty.cbsa) {
+          url = `https://api.covidactnow.org/v2/cbsa/${activeCounty.cbsa.fips}.timeseries.json?apiKey=${apiKey}`;
         }
 
         break;
@@ -107,7 +110,7 @@ export default function Stats({ apiKey, relativeTo, activeCounty, activeMetric, 
       break;
       case 'county':
       default:
-        url = `https://api.covidactnow.org/v2/county/${activeCounty.id}.timeseries.json?apiKey=${apiKey}`;
+        url = `https://api.covidactnow.org/v2/county/${activeCounty.fips}.timeseries.json?apiKey=${apiKey}`;
       break;
     }
 
@@ -126,7 +129,7 @@ export default function Stats({ apiKey, relativeTo, activeCounty, activeMetric, 
       activateTimeseries(response);
     })
     .catch(error => {
-      console.log(error);
+      console.error(error);
     })
 
     setTimeseriesAbortController(controller);
@@ -149,7 +152,7 @@ export default function Stats({ apiKey, relativeTo, activeCounty, activeMetric, 
       }
     }
 
-    if (!activeCounty || !activeCounty.id) {
+    if (!activeCounty || !activeCounty.fips) {
       if (!summary) {
         return;
       } else {
@@ -319,7 +322,7 @@ export default function Stats({ apiKey, relativeTo, activeCounty, activeMetric, 
         setMaximized(true);
         url.searchParams.delete('w')
         url.searchParams.set('max', true)
-      } else if ((newWidth * width) >= 150) {
+      } else if ((newWidth * width) >= 300) {
         url.searchParams.delete('max')
         url.searchParams.set('w', newWidth)
         setStatsWidth(newWidth);
@@ -334,7 +337,7 @@ export default function Stats({ apiKey, relativeTo, activeCounty, activeMetric, 
 
   return (
     <div
-      key={`summary-${activeCounty.id}`}
+      key={`summary-${activeCounty.fips}`}
       style={style}
       className={`summary overlay ${showStats ? 'show' : 'hide' }`}
       onMouseEnter={() => setHighlightedState(null)}
@@ -356,7 +359,7 @@ export default function Stats({ apiKey, relativeTo, activeCounty, activeMetric, 
               <div className={`state-level`}>State</div>
               <div className="active-indicator" />
             </div>
-            {activeCounty && activeCounty.properties.cbsa &&
+            {activeCounty && activeCounty.cbsa &&
               <div className={`metric-level-selector ${metricLevel === 'cbsa' ? 'active' : ''}`} onClick={() => setMetricLevel('cbsa')}>
                 <div className={`cbsa-level`}>Region</div>
                 <div className="active-indicator" />

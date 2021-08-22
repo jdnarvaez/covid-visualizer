@@ -90,7 +90,25 @@ const config = {
   module: {
     rules: [
       {
-        test: /\.Worker\.js$/,
+        test: /\.json$/,
+        type: 'javascript/auto',
+        include: [
+          path.resolve(path.join(__dirname, 'src', 'geometry'))
+        ],
+        use:
+        [
+          {
+            loader: 'file-loader',
+            options:
+            {
+              esModule: false,
+              name: '[name].[ext]'
+            }
+          }
+        ]
+      },
+      {
+        test: /\.Worker\.(js|jsx)$/,
         exclude: /node_modules\//,
         use: [
           {
@@ -115,21 +133,42 @@ const config = {
       },
       {
         test: /\.(png|svg|jpg|gif|otf|eot|ttf|svg|woff|woff2|csv|xlsx|xls|ico)$/,
-        use: 'file-loader',
-      },
-      {
-        test: /service-worker.js$/,
-        use: 'file-loader',
-      },
-      {
-        test: /\.(glb|gltf|mp4|jsfont)$/,
         use:
         [
           {
             loader: 'file-loader',
             options:
             {
-              esModule: false
+              esModule: false,
+              name: '[name].[ext]'
+            }
+          }
+        ]
+      },
+      {
+        test: /service-worker.js$/,
+        use:
+        [
+          {
+            loader: 'file-loader',
+            options:
+            {
+              esModule: false,
+              name: '[name].[ext]'
+            }
+          }
+        ]
+      },
+      {
+        test: /\.(glb|gltf|mp4|jsfont|topojson)$/,
+        use:
+        [
+          {
+            loader: 'file-loader',
+            options:
+            {
+              esModule: false,
+              name: '[name].[ext]'
             }
           }
         ]
